@@ -1,13 +1,16 @@
 <div class="row">
+<!--  put some header-->
   <div class="col-md-6">
     <form [formGroup]="formGroup">
       <div class="form-group">
         <label for="firstName">First name</label>
         <input type="text" class="form-control" id="firstName" formControlName="firstName">
+        <small *ngIf="firstNameControl.errors" class="text-danger">{{firstNameControl.errors}}</small>
       </div>
       <div class="form-group">
         <label for="lastName">Last Name</label>
         <input type="text" class="form-control" id="lastName" formControlName="lastName">
+        <small *ngIf="lastNameControl.errors" class="text-danger">{{lastNameControl.errors}}</small>
       </div>
       <div class="form-group">
         <label for="username">Username</label>
@@ -16,8 +19,26 @@
                class="form-control" id="username" formControlName="username">
         <small *ngIf="usernameControl.errors" class="text-danger">{{usernameControl.errors}}</small>
       </div>
+      <div class="form-group">
+        <table class="table">
+          <thead>
+            <tr>
+              <th>Verified Phones</th>
+              <th>Primary</th>
+<!--              <a class="btn btn-link" (click)="newPhone(null)">New Phone</a>-->
+            </tr>
+          </thead>
+          <tbody>
+<!--            <tr *ngFor="let phone of phones">-->
+<!--              <td>{{phone.phoneNumber}}</td>-->
+<!--              <td>{{phone.primary}}</td>-->
+<!--            </tr>-->
+          </tbody>
+        </table>
+      </div>
     </form>
     <button class="btn btn-primary" (click)="save()">Save</button>
     <button class="btn btn-link" (click)="cancel()">Cancel</button>
+<!--    <button class="btn btn-link float-right"  (click)='delete()'>Delete</button>-->
   </div>
 </div>

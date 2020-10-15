@@ -21,7 +21,18 @@ export class UserListComponent implements OnInit {
     });
   }
 
+  newUser(user: UserModel) {
+    this.router.navigateByUrl('users/');
+  }
+
   edit(user: UserModel) {
     this.router.navigateByUrl(`users/${user.userId}`);
+  }
+
+  delete(user: UserModel): void {
+    if(user.userId != null) {
+      this.userService.delete(user.userId).subscribe();
+      this.ngOnInit();
+    }
   }
 }

@@ -13,6 +13,8 @@ export class UserDetailComponent implements OnInit {
 
   formGroup = this.createFormGroup();
 
+  //isDeleteButtonVisible = false;
+
   constructor(private formBuilder: FormBuilder,
               private userService: UserService,
               private router: Router,
@@ -22,7 +24,10 @@ export class UserDetailComponent implements OnInit {
   ngOnInit(): void {
     this.activatedRoute.paramMap.subscribe(params => {
       const userId = params.get("userId");
-      this.loadUser(userId);
+      if(params != null) {
+        //this.deleteVisible();
+        this.loadUser(userId);
+      }
     })
   }
 
@@ -41,8 +46,20 @@ export class UserDetailComponent implements OnInit {
     });
   }
 
+  get firstNameControl(): FormControl {
+    return this.formGroup.get("firstName") as FormControl;
+  }
+
+  get lastNameControl(): FormControl {
+    return this.formGroup.get("lastName") as FormControl;
+  }
+
   get usernameControl(): FormControl {
     return this.formGroup.get("username") as FormControl;
+  }
+
+  get userIdControl(): FormControl {
+    return this.formGroup.get("userId") as FormControl;
   }
 
   save() {
@@ -60,8 +77,27 @@ export class UserDetailComponent implements OnInit {
     })
   }
 
+//   deleteVisible() {
+//     this.isDeleteButtonVisible = true;
+//   }
+//   deleteInvisible() {
+//     this.isDeleteButtonVisible = false;
+//   }
+
+  isDeleteVisible() : boolean {
+    if(this.formGroup.get("userId") !== null) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+
   cancel() {
     this.router.navigateByUrl("users");
   }
+
+//   delete(userId: string) : void {
+//
+//   }
 
 }

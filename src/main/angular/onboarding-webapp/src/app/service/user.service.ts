@@ -27,4 +27,8 @@ export class UserService {
   get(userId: string): Observable<UserModel> {
     return this.http.get<UserModel>(`${BASE_URL}/${userId}`);
   }
+
+  delete(userId: string): Observable<UserModel> {
+    return this.http.delete<UserModel>(`${BASE_URL}/${userId}`);
+  }
 }
