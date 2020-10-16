@@ -1,8 +1,9 @@
 import {Component, OnInit} from '@angular/core';
-import {FormBuilder, FormControl, FormGroup} from "@angular/forms";
+import {FormBuilder, FormControl, FormGroup, FormArray} from "@angular/forms";
 import {UserService} from "../service/user.service";
 import {ActivatedRoute, Router} from "@angular/router";
 import {UserModel} from "../model/user.model";
+import {PhoneModel} from "../model/phone.model";
 
 @Component({
   selector: 'app-user-detail',
@@ -25,7 +26,6 @@ export class UserDetailComponent implements OnInit {
     this.activatedRoute.paramMap.subscribe(params => {
       const userId = params.get("userId");
       if(params != null) {
-        //this.deleteVisible();
         this.loadUser(userId);
       }
     })
@@ -42,9 +42,22 @@ export class UserDetailComponent implements OnInit {
       userId: null,
       firstName: null,
       lastName: null,
-      username: null
+      username: null,
+      phones: null
     });
   }
+
+//   private createFormGroup(): FormGroup {
+//       return this.formBuilder.group({
+//       userDetails: this.formBuilder.group({
+//           userId: null,
+//           firstName: null,
+//           lastName: null,
+//           username: null
+//       }),
+//           phones: this.formBuilder.array([null])
+//       })
+//     }
 
   get firstNameControl(): FormControl {
     return this.formGroup.get("firstName") as FormControl;
@@ -60,6 +73,10 @@ export class UserDetailComponent implements OnInit {
 
   get userIdControl(): FormControl {
     return this.formGroup.get("userId") as FormControl;
+  }
+
+  get phonesControl(): FormArray {
+    return this.formGroup.get("phones") as FormArray;
   }
 
   save() {
@@ -99,5 +116,9 @@ export class UserDetailComponent implements OnInit {
 //   delete(userId: string) : void {
 //
 //   }
+
+  newPhone(phone: PhoneModel) {
+
+  }
 
 }

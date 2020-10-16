@@ -1,3 +1,6 @@
+<hr/>
+<header class="display-4">User Details</header>
+<hr/>
 <div class="row">
 <!--  put some header-->
   <div class="col-md-6">
@@ -25,14 +28,23 @@
             <tr>
               <th>Verified Phones</th>
               <th>Primary</th>
-<!--              <a class="btn btn-link" (click)="newPhone(null)">New Phone</a>-->
+              <th>
+              <a class="btn btn-primary p-1 m-0 border-0" (click)="newPhone(null)">Add</a>
+              </th>
             </tr>
           </thead>
           <tbody>
-<!--            <tr *ngFor="let phone of phones">-->
-<!--              <td>{{phone.phoneNumber}}</td>-->
-<!--              <td>{{phone.primary}}</td>-->
-<!--            </tr>-->
+          <div formArrayName="phones">
+            <tr *ngFor="let phone of phonesControl; index as i">
+              <div class="form-group pt-3" [formGroupName] = "formGroup">
+              <input type="tel" pattern="\([0-9]{3}\)[0-9]{3}[-][0-9]{4}"
+                     [class.is-invalid]="phone.errors"
+                     class="form-control" id='phone${i}' formControlName='phone.phoneNumber'>
+                <small *ngIf="phone.errors" class="text-danger">{{phone.errors}}</small>
+              </div>
+              <td>{{phone.primary}}</td>
+            </tr>
+          </div>
           </tbody>
         </table>
       </div>
