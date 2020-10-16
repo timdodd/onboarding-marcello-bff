@@ -33,50 +33,55 @@ export class UserDetailComponent implements OnInit {
 
   private loadUser(userId: string) {
     this.userService.get(userId).subscribe(user => {
-      this.formGroup.patchValue(user);
+      this.formGroup.get("userDetails").patchValue(user);
+      for(let i = 0; i < user.phones.length; i++) {
+      (<FormArray>this.formGroup.get("phones")).push(new FormControl());
+      (<FormArray>this.formGroup.get("phones")).at(i).patchValue(user.phones[i]);
+      }
     });
   }
+
+//simple
+//   private createFormGroup(): FormGroup {
+//     return this.formBuilder.group({
+//       userId: null,
+//       firstName: null,
+//       lastName: null,
+//       username: null,
+//       phones: this.formBuilder.array([])
+//     });
+//   }
 
   private createFormGroup(): FormGroup {
-    return this.formBuilder.group({
-      userId: null,
-      firstName: null,
-      lastName: null,
-      username: null,
-      phones: null
-    });
-  }
-
-//   private createFormGroup(): FormGroup {
-//       return this.formBuilder.group({
-//       userDetails: this.formBuilder.group({
-//           userId: null,
-//           firstName: null,
-//           lastName: null,
-//           username: null
-//       }),
-//           phones: this.formBuilder.array([null])
-//       })
-//     }
+      return this.formBuilder.group({
+        userDetails: this.formBuilder.group({
+            userId: null,
+            firstName: null,
+            lastName: null,
+            username: null
+            }),
+        phones: this.formBuilder.array([])
+      })
+    }
 
   get firstNameControl(): FormControl {
-    return this.formGroup.get("firstName") as FormControl;
+    return this.formGroup.get("userDetails").get("firstName") as FormControl;
   }
 
   get lastNameControl(): FormControl {
-    return this.formGroup.get("lastName") as FormControl;
+    return this.formGroup.get("userDetails").get("lastName") as FormControl;
   }
 
   get usernameControl(): FormControl {
-    return this.formGroup.get("username") as FormControl;
+    return this.formGroup.get("userDetails").get("username") as FormControl;
   }
 
   get userIdControl(): FormControl {
-    return this.formGroup.get("userId") as FormControl;
+    return this.formGroup.get("userDetails").get("userId") as FormControl;
   }
 
   get phonesControl(): FormArray {
-    return this.formGroup.get("phones") as FormArray;
+    return (<FormArray>this.formGroup.get("phones") as FormArray);
   }
 
   save() {

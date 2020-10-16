@@ -5,17 +5,17 @@
 <!--  put some header-->
   <div class="col-md-6">
     <form [formGroup]="formGroup">
-      <div class="form-group">
+      <div class="form-group" formGroupName="userDetails">
         <label for="firstName">First name</label>
         <input type="text" class="form-control" id="firstName" formControlName="firstName">
         <small *ngIf="firstNameControl.errors" class="text-danger">{{firstNameControl.errors}}</small>
       </div>
-      <div class="form-group">
+      <div class="form-group" formGroupName="userDetails">
         <label for="lastName">Last Name</label>
         <input type="text" class="form-control" id="lastName" formControlName="lastName">
         <small *ngIf="lastNameControl.errors" class="text-danger">{{lastNameControl.errors}}</small>
       </div>
-      <div class="form-group">
+      <div class="form-group" formGroupName="userDetails">
         <label for="username">Username</label>
         <input type="text"
                [class.is-invalid]="usernameControl.errors"
@@ -35,20 +35,25 @@
           </thead>
           <tbody>
           <div formArrayName="phones">
-            <tr *ngFor="let phone of phonesControl; index as i">
-              <div class="form-group pt-3" [formGroupName] = "formGroup">
+            <div class="pt-3 form-group">
+              <tr *ngFor="let phone of phonesControl; index as i">
               <input type="tel" pattern="\([0-9]{3}\)[0-9]{3}[-][0-9]{4}"
                      [class.is-invalid]="phone.errors"
-                     class="form-control" id='phone${i}' formControlName='phone.phoneNumber'>
+                     class="form-control" id='phone${i}' formControlName='phoneNumber'>
                 <small *ngIf="phone.errors" class="text-danger">{{phone.errors}}</small>
-              </div>
-              <td>{{phone.primary}}</td>
-            </tr>
+              </tr>
+<!--              <div class="form-group">-->
+<!--                <label for="phoneNumber">Phone Number</label>-->
+<!--                <input type="text" class="form-control" id="addPhoneNumber" formControlName="">-->
+<!--                <small *ngIf="firstNameControl.errors" class="text-danger">{{firstNameControl.errors}}</small>-->
+<!--              </div>-->
+            </div>
           </div>
           </tbody>
         </table>
       </div>
     </form>
+    <hr/>
     <button class="btn btn-primary" (click)="save()">Save</button>
     <button class="btn btn-link" (click)="cancel()">Cancel</button>
 <!--    <button class="btn btn-link float-right"  (click)='delete()'>Delete</button>-->
