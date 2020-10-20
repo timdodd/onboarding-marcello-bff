@@ -5,17 +5,17 @@
 <!--  put some header-->
   <div class="col-md-6">
     <form [formGroup]="formGroup">
-      <div class="form-group" formGroupName="userDetails">
+      <div class="form-group">
         <label for="firstName">First name</label>
         <input type="text" class="form-control" id="firstName" formControlName="firstName">
         <small *ngIf="firstNameControl.errors" class="text-danger">{{firstNameControl.errors}}</small>
       </div>
-      <div class="form-group" formGroupName="userDetails">
+      <div class="form-group">
         <label for="lastName">Last Name</label>
         <input type="text" class="form-control" id="lastName" formControlName="lastName">
         <small *ngIf="lastNameControl.errors" class="text-danger">{{lastNameControl.errors}}</small>
       </div>
-      <div class="form-group" formGroupName="userDetails">
+      <div class="form-group">
         <label for="username">Username</label>
         <input type="text"
                [class.is-invalid]="usernameControl.errors"
@@ -28,20 +28,28 @@
             <tr>
               <th>Verified Phones</th>
               <th>Primary</th>
-              <th>
-              <a class="btn btn-primary p-1 m-0 border-0" (click)="newPhone(null)">Add</a>
-              </th>
+<!--              <th>-->
+<!--&lt;!&ndash;              <a class="btn btn-primary p-1 m-0 border-0" (click)="newPhone(null)">Add</a>&ndash;&gt;-->
+<!--              </th>-->
             </tr>
           </thead>
           <tbody>
-          <div formArrayName="phones">
-            <div class="pt-3 form-group">
-              <tr *ngFor="let phone of phonesControl; index as i">
-              <input type="tel" pattern="\([0-9]{3}\)[0-9]{3}[-][0-9]{4}"
-                     [class.is-invalid]="phone.errors"
-                     class="form-control" id='phone${i}' formControlName='phoneNumber'>
-                <small *ngIf="phone.errors" class="text-danger">{{phone.errors}}</small>
-              </tr>
+          <tr >
+          <div [formGroup]="formGroup" formArrayName="phones">
+            <div class="pt-3" *ngFor="let phone of phonesControl.controls; let i = index">
+              <div formGroupName="{{i}}">
+                <td>
+                <input type="tel" pattern="\([0-9]{3}\)[0-9]{3}[-][0-9]{4}" [class.is-invalid]="phone.errors"
+                      class="form-control" id='phone${i}' formControlName="phoneNumber">
+<!--                  <small *ngIf="phone.errors" class="text-danger">{{phone.errors}}</small>-->
+                </td>
+                <td>
+                  <div class="form-check">
+                    <input type="checkbox" class="form-check-input" id="primary${i}"
+                           formControlName="primaryPhone">
+                  </div>
+                </td>
+              </div>
 <!--              <div class="form-group">-->
 <!--                <label for="phoneNumber">Phone Number</label>-->
 <!--                <input type="text" class="form-control" id="addPhoneNumber" formControlName="">-->
@@ -49,6 +57,7 @@
 <!--              </div>-->
             </div>
           </div>
+          </tr>
           </tbody>
         </table>
       </div>

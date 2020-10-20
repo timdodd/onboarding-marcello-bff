@@ -12,7 +12,7 @@ public class PhoneDto {
     private UUID phoneId;
     private UUID userId;
     private String phoneNumber;
-    private boolean primary;
+    private boolean primaryPhone;
     private boolean verified;
     private String verificationCode;
     private Timestamp time;

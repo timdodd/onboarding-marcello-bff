@@ -11,33 +11,33 @@ import java.util.List;
 import java.util.UUID;
 
 @RestController
-@RequestMapping("/api/v1/users/{userId}/phones")
+@RequestMapping("/api/v1/users")
 public class PhoneController {
 
     @Autowired
     private PhoneClient phoneClient;
 
-    @GetMapping("/{phoneId}")
+    @GetMapping("/{userId}/phones/{phoneId}")
     public PhoneDto get(@PathVariable("userId") UUID userId,
                         @PathVariable("phoneId") UUID phoneId) {
         return phoneClient.get(phoneId, userId);
     }
 
-    @PostMapping()
+    @PostMapping("/{userId}/phones")
     @ResponseStatus(HttpStatus.CREATED)
     public PhoneDto create(@RequestBody PhoneDto dto) {
 
         return phoneClient.create(dto);
     }
 
-    @DeleteMapping("/{phoneId}")
+    @DeleteMapping("/{userId}/phones/{phoneId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void delete(@PathVariable("phoneId") UUID phoneId,
                        @PathVariable("userId") UUID userId) {
         phoneClient.delete(phoneId, userId);
     }
 
-    @PutMapping("/{phoneId}")
+    @PutMapping("/{userId}/phones/{phoneId}")
     public PhoneDto update(
             @PathVariable("userId") UUID userId,
             @PathVariable("phoneId") UUID phoneId,
@@ -47,32 +47,32 @@ public class PhoneController {
         return phoneClient.update(dto);
     }
 
-    @PutMapping("/makePrimary/{phoneId}")
+    @PutMapping("/{userId}/phones/makePrimary/{phoneId}")
     public PhoneDto makePrimary(@PathVariable("phoneId") UUID phoneId,
                                 @PathVariable("userId") UUID userId) {
 
         return phoneClient.makePrimary(phoneClient.get(phoneId, userId));
     }
 
-    @GetMapping()
-    public List<PhoneDto> findByUserId(@RequestParam("userId") UUID userId) {
+    @GetMapping("/{userId}/phones")
+    public List<PhoneDto> findByUserId(@PathVariable("userId") UUID userId) {
         return phoneClient.findByUserId(userId);
     }
 
 
-    @PostMapping("/{phoneId}/sendVerification")
+    @PostMapping("/{userId}/phones/{phoneId}/sendVerification")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void sendVerification(@PathVariable("phoneId") UUID phoneId, @PathVariable("userId") UUID userId) {
         phoneClient.sendVerification(phoneId, userId);
     }
 
-    @PostMapping("/{phoneId}/verify")
+    @PostMapping("/{userId}/phones/{phoneId}/verify")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void verify(@PathVariable("phoneId") UUID phoneId, @RequestBody PhoneVerificationDto dto) {
         phoneClient.verify(phoneId, dto);
     }
 
-//    @GetMapping("/primaryPhone")
+//    @GetMapping("/{userId}/phones/primaryPhone")
 //    public List<PhoneDto> findByPrimaryPhone(@RequestParam("userId") UUID userId) {
 //        return phoneService.findByPrimaryPhone(userId);
 //    }

@@ -1,6 +1,7 @@
 import {Component, OnInit} from '@angular/core';
 import {FormBuilder, FormControl, FormGroup, FormArray} from "@angular/forms";
 import {UserService} from "../service/user.service";
+import {PhoneService} from "../service/phone.service";
 import {ActivatedRoute, Router} from "@angular/router";
 import {UserModel} from "../model/user.model";
 import {PhoneModel} from "../model/phone.model";
@@ -18,6 +19,7 @@ export class UserDetailComponent implements OnInit {
 
   constructor(private formBuilder: FormBuilder,
               private userService: UserService,
+              private phoneService: PhoneService,
               private router: Router,
               private activatedRoute: ActivatedRoute) {
   }
@@ -33,51 +35,70 @@ export class UserDetailComponent implements OnInit {
 
   private loadUser(userId: string) {
     this.userService.get(userId).subscribe(user => {
-      this.formGroup.get("userDetails").patchValue(user);
-      for(let i = 0; i < user.phones.length; i++) {
-      (<FormArray>this.formGroup.get("phones")).push(new FormControl());
-      (<FormArray>this.formGroup.get("phones")).at(i).patchValue(user.phones[i]);
-      }
+      this.formGroup.patchValue(user);
+    });
+    this.phoneService.findUserPhones(userId).subscribe(phones => {
+        for(let i = 0; i < phones.length; i++) {
+          if((<FormArray>this.formGroup.get("phones")).at(i) == null)
+          {
+             (<FormArray>this.formGroup.get("phones")).push(this.addPhone(phones[i]));
+          }
+        }
+    });
+
+    console.log(this.formGroup.get("phones"));
+    console.log(this.formGroup.get('phones').value);
+  }
+
+//took a while to get right
+  private createFormGroup(): FormGroup {
+    return this.formBuilder.group({
+      userId: null,
+      firstName: null,
+      lastName: null,
+      username: null,
+      phones: this.formBuilder.array([
+        this.formBuilder.group({
+          phoneId: null,
+          userId: null,
+          phoneNumber: null,
+          primaryPhone: null,
+          verified: null,
+          verificationCode: null,
+          time: null
+        })
+      ])
     });
   }
 
-//simple
-//   private createFormGroup(): FormGroup {
-//     return this.formBuilder.group({
-//       userId: null,
-//       firstName: null,
-//       lastName: null,
-//       username: null,
-//       phones: this.formBuilder.array([])
-//     });
-//   }
+  private addPhone(phone: PhoneModel): FormGroup {
+    return this.formBuilder.group({
+      phoneId: phone.phoneId,
+      userId: phone.userId,
+      phoneNumber: phone.phoneNumber,
+      primaryPhone: phone.primaryPhone,
+      verified: phone.verified,
+      verificationCode: phone.verificationCode,
+      time: phone.time
+    });
 
-  private createFormGroup(): FormGroup {
-      return this.formBuilder.group({
-        userDetails: this.formBuilder.group({
-            userId: null,
-            firstName: null,
-            lastName: null,
-            username: null
-            }),
-        phones: this.formBuilder.array([])
-      })
-    }
+  }
+
 
   get firstNameControl(): FormControl {
-    return this.formGroup.get("userDetails").get("firstName") as FormControl;
+    return this.formGroup.get("firstName") as FormControl;
   }
 
   get lastNameControl(): FormControl {
-    return this.formGroup.get("userDetails").get("lastName") as FormControl;
+    return this.formGroup.get("lastName") as FormControl;
   }
 
   get usernameControl(): FormControl {
-    return this.formGroup.get("userDetails").get("username") as FormControl;
+    return this.formGroup.get("username") as FormControl;
   }
 
   get userIdControl(): FormControl {
-    return this.formGroup.get("userDetails").get("userId") as FormControl;
+    return this.formGroup.get("userId") as FormControl;
   }
 
   get phonesControl(): FormArray {
@@ -121,9 +142,5 @@ export class UserDetailComponent implements OnInit {
 //   delete(userId: string) : void {
 //
 //   }
-
-  newPhone(phone: PhoneModel) {
-
-  }
 
 }

@@ -16,5 +16,5 @@ public class UserDto {
 	private String lastName;
 	private String username;
 	//fixme when you add phones
-	private List<Object> phones;
+	private List<PhoneDto> phones = new ArrayList<PhoneDto>();
 }
