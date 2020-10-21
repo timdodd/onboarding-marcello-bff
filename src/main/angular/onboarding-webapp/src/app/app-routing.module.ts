@@ -13,6 +13,10 @@ const routes: Routes = [
     path: "users/:userId",
     component: UserDetailComponent,
   },
+//   {
+//   path: "users/newUser",
+//   component: UserDetailComponent,
+//   },
   {
     path: "**",
     redirectTo: "users"

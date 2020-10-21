@@ -15,8 +15,6 @@ export class UserDetailComponent implements OnInit {
 
   formGroup = this.createFormGroup();
 
-  //isDeleteButtonVisible = false;
-
   constructor(private formBuilder: FormBuilder,
               private userService: UserService,
               private phoneService: PhoneService,
@@ -27,8 +25,11 @@ export class UserDetailComponent implements OnInit {
   ngOnInit(): void {
     this.activatedRoute.paramMap.subscribe(params => {
       const userId = params.get("userId");
-      if(params != null) {
+      if(params) {
         this.loadUser(userId);
+        if(userId) {
+          this.loadPhones(userId);
+        }
       }
     })
   }
@@ -37,17 +38,22 @@ export class UserDetailComponent implements OnInit {
     this.userService.get(userId).subscribe(user => {
       this.formGroup.patchValue(user);
     });
+  }
+
+  private loadPhones(userId: string) {
+  if(userId) {
+  console.log("before load length: ", this.phonesControl);
     this.phoneService.findUserPhones(userId).subscribe(phones => {
-        for(let i = 0; i < phones.length; i++) {
+      for(let i = 0; i < phones.length; i++) {
           if((<FormArray>this.formGroup.get("phones")).at(i) == null)
           {
              (<FormArray>this.formGroup.get("phones")).push(this.addPhone(phones[i]));
           }
-        }
+      }
     });
-
-    console.log(this.formGroup.get("phones"));
-    console.log(this.formGroup.get('phones').value);
+  }
+        //console.log(this.formGroup.get("phones"));
+        //console.log(this.formGroup.get('phones').value);
   }
 
 //took a while to get right
@@ -57,17 +63,7 @@ export class UserDetailComponent implements OnInit {
       firstName: null,
       lastName: null,
       username: null,
-      phones: this.formBuilder.array([
-        this.formBuilder.group({
-          phoneId: null,
-          userId: null,
-          phoneNumber: null,
-          primaryPhone: null,
-          verified: null,
-          verificationCode: null,
-          time: null
-        })
-      ])
+      phones: this.formBuilder.array([])
     });
   }
 
@@ -115,32 +111,41 @@ export class UserDetailComponent implements OnInit {
           this.formGroup.get(key).setErrors(httpError.error[key]);
         });
       } else {
-        console.log("oh no something horrible went awry");
+        console.log("oh no something horrible went awry saving user");
       }
     })
   }
 
-//   deleteVisible() {
-//     this.isDeleteButtonVisible = true;
-//   }
-//   deleteInvisible() {
-//     this.isDeleteButtonVisible = false;
-//   }
+  savePhones() {
 
-  isDeleteVisible() : boolean {
-    if(this.formGroup.get("userId") !== null) {
-      return true;
-    } else {
-      return false;
-    }
+    const valuesToSave = this.formGroup.get("phones").value as PhoneModel[];
+    valuesToSave.forEach(phone => {
+      this.phoneService.save(phone, phone.userId).subscribe(savedValue => {
+        //this.router.navigateByUrl("users");
+      }, httpError => {
+        if (httpError.status === 400) {
+          Object.keys(httpError.error).forEach(key => {
+            this.formGroup.get(key).setErrors(httpError.error[key]);
+          });
+        } else {
+          console.log("oh no something horrible went awry saving phones");
+        }
+      })
+    })
+
   }
 
   cancel() {
     this.router.navigateByUrl("users");
   }
 
-//   delete(userId: string) : void {
-//
-//   }
+  isPrimaryPhone(phoneControl: FormControl) {
+  console.log("phone control for phone " + phoneControl.value.phoneNumber + ":  primaryPhone: ", phoneControl.value.primaryPhone);
+    if(phoneControl.value.primaryPhone == true) {
+      return true;
+    } else {
+      return false;
+    }
+  }
 
 }

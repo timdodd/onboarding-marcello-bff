@@ -22,7 +22,7 @@ export class UserListComponent implements OnInit {
   }
 
   newUser(user: UserModel) {
-    this.router.navigateByUrl('users/');
+    this.router.navigateByUrl(`users/`);
   }
 
   edit(user: UserModel) {
@@ -30,7 +30,7 @@ export class UserListComponent implements OnInit {
   }
 
   delete(user: UserModel): void {
-    if(user.userId != null) {
+    if(user.userId) {
       this.userService.delete(user.userId).subscribe();
       this.ngOnInit();
     }
