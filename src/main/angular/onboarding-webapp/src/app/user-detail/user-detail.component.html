@@ -1,8 +1,7 @@
 <hr/>
 <header class="display-4">User Details</header>
 <hr/>
-<div class="row">
-<!--  put some header-->
+<div class="row" mb-5>
   <div class="col-md-6">
     <form [formGroup]="formGroup">
       <div class="form-group">
@@ -26,8 +25,8 @@
           <thead>
             <tr>
               <th>Phone Numbers</th>
-              <th>Verified</th>
               <th>Primary</th>
+              <th>Verified</th>
 <!--              <th>-->
 <!--&lt;!&ndash;              <a class="btn btn-primary p-1 m-0 border-0" (click)="newPhone(null)">Add</a>&ndash;&gt;-->
 <!--              </th>-->
@@ -42,19 +41,44 @@
               <small *ngIf="phone.errors" class="text-danger">{{phone.errors}}</small>
             </td>
             <td>
-              <div class="form-check" >
-                <input type="checkbox" class="form-check-input" id="verified${i}"
-                       formControlName="verified" disabled="primaryPhoneCheckboxDisabled">
-              </div>
-            </td>
-            <td>
               <div class="form-check">
-<!--                ask about the radio buttons - may need to check that I'm loading forms correctly-->
+                <!--                ask about the radio buttons - may need to check that I'm loading forms correctly-->
                 <input type="radio" class="form-check-input" id="primary${i}"
                        formControlName="primaryPhone" name="primaryPhone"
                        [value]="isPrimaryPhone(phone)" [(ng-model)]="phone.value.primaryPhone"
                        checked="isPrimaryPhone(phone) == true">
               </div>
+            </td>
+            <td *ngIf="checkVerified(verified) == true">
+              <div class="form-check" >
+                <input type="checkbox" class="form-check-input" id="verified${i}"
+                       formControlName="verified" disabled="primaryPhoneCheckboxDisabled">
+              </div>
+            </td>
+            <td *ngIf="checkVerified(verified) == false">
+              <a class="btn btn-sm btn-link pt-0 mt-0 border-0" (click)="verifyPhone()">Verify</a>
+            </td>
+          </tr>
+          <tr *ngIf="newPhoneRowVisible == false" colspan="3" class="text-center">
+              <a class="btn btn-sm btn-primary pt-0 mt-2 border-0" (click)="showPhoneForm()">+ Add New Phone</a>
+          </tr>
+          <tr *ngIf="newPhoneRowVisible" [formGroup]="newPhoneFormGroup">
+            <td>
+              <small for="phoneNumber">Enter Phone Number:</small>
+              <input type="tel" pattern="\([0-9]{3}\)[0-9]{3}[-][0-9]{4}" formControlName="phoneNumber"
+                     class="form-control mt-2" id='phoneNumber' placeholder="(123)456-789">
+              <small [*ngIf]="newPhoneNumberControl.errors" class="text-danger">
+                {{newPhoneNumberControl.errors}}</small>
+            </td>
+            <td>
+              <small for="primaryNumber">Set as Primary</small>
+              <div class="form-check">
+                <input type="checkbox" class="form-check-input mt-2 float-left" id="primaryNumber"
+                       formControlName="primaryPhone">
+              </div>
+            </td>
+            <td >
+                <a class="btn btn-sm btn-primary mt-4 border-0" (click)="addNewPhone()">Add</a>
             </td>
           </tr>
           </tbody>

@@ -21,7 +21,7 @@ export class PhoneService {
     return this.http.get<PhoneModel[]>(`${BASE_URL}/${userId}/phones/${phoneId}`);
   }
 
-  save(phone: PhoneModel, userId: string) {
+  save(phone: PhoneModel, userId: string): Observable<PhoneModel> {
       if (phone.phoneId) {
         return this.http.put<PhoneModel>(`${BASE_URL}/${userId}/phones/${phone.phoneId}`, phone);
       }
