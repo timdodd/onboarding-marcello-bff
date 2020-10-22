@@ -43,10 +43,8 @@
             <td>
               <div class="form-check">
                 <!--                ask about the radio buttons - may need to check that I'm loading forms correctly-->
-                <input type="radio" class="form-check-input" id="primary${i}"
-                       formControlName="primaryPhone" name="primaryPhone"
-                       [value]="isPrimaryPhone(phone)" [(ng-model)]="phone.value.primaryPhone"
-                       checked="isPrimaryPhone(phone) == true">
+                <input type="radio" class="form-check-input" [value]="isPrimaryPhone(i)" name="primary"
+                       [checked]="isPrimaryPhone(i) === true">
               </div>
             </td>
             <td *ngIf="checkVerified(verified) == true">

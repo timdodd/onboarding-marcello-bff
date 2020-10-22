@@ -52,6 +52,7 @@ export class UserDetailComponent implements OnInit {
           }
       }
     });
+    console.log("after load: ", this.phonesControl.controls);
   }
         //console.log(this.formGroup.get("phones"));
         //console.log(this.formGroup.get('phones').value);
@@ -77,18 +78,6 @@ export class UserDetailComponent implements OnInit {
     });
   }
 
-//   private createNewPhoneGroup(): FormGroup {
-//     return this.formBuilder.group({
-//       phoneId: null,
-//       userId: null,
-//       phoneNumber: null,
-//       primaryPhone: null,
-//       verified: null,
-//       verificationCode: null,
-//       time: null
-//     });
-//   }
-
   private addPhone(phone: PhoneModel): FormGroup {
     return this.formBuilder.group({
       phoneId: phone.phoneId,
@@ -101,7 +90,6 @@ export class UserDetailComponent implements OnInit {
     });
 
   }
-
 
   get firstNameControl(): FormControl {
     return this.formGroup.get("firstName") as FormControl;
@@ -173,6 +161,14 @@ export class UserDetailComponent implements OnInit {
     this.router.navigateByUrl("users");
   }
 
+  //change="makePrimary(${i})"
+  handleRadioChange(index: number) {
+  this.phonesControl.value.forEach(phone => {
+        phone.primaryPhone = false;
+      })
+      this.phonesControl.value.at(index).primaryPhone = true;
+  }
+
   checkVerified(verify: any) {
     if(verify === true){
       return true;
@@ -185,10 +181,11 @@ export class UserDetailComponent implements OnInit {
 
   }
 
-  isPrimaryPhone(phoneControl: FormControl) {
-  //console.log("phone control for phone " + phoneControl.value.phoneNumber + ":  primaryPhone: ", phoneControl.value.primaryPhone);
-    if(phoneControl.value.primaryPhone == true) {
-      return true;
+  isPrimaryPhone(index: number) {
+  const phoneToCheck = this.phonesControl.at(index).value.primaryPhone;
+  console.log("primary for phone " + index + " is " + phoneToCheck);
+    if(phoneToCheck) {
+      return phoneToCheck === true ? true : false;
     } else {
       return false;
     }
@@ -199,15 +196,13 @@ export class UserDetailComponent implements OnInit {
   }
 
   addNewPhone() {
-    var phone = new PhoneModel;
-    phone.phoneId = null;
-    phone.userId = this.formGroup.get("userId").value;
+    var valueToSave = this.formGroup.get("newPhone").value as PhoneModel;
+    valueToSave.userId = this.formGroup.get("userId").value as string;
+    valueToSave.primaryPhone = this.formGroup.get("newPhone").get("primaryPhone").value === true ? true : false;
 
-    phone.phoneNumber = this.formGroup.get("newPhone").get("phoneNumber").value;
-    phone.primaryPhone = this.formGroup.get("newPhone").get("primaryPhone").value === true ? true : false;
-    //console.log("The phone to be created: " + phone.userId + " " + phone.phoneNumber + " " + phone.primaryPhone);
-    if(phone.userId) {
-        this.phoneService.save(phone, phone.userId).subscribe(phone => {
+    console.log("The phone to be created: " + valueToSave.userId + " " + valueToSave.phoneNumber + " " + valueToSave.primaryPhone);
+    if(valueToSave.userId) {
+        this.phoneService.save(valueToSave, valueToSave.userId).subscribe(phone => {
           this.newPhoneRowVisible = false;
           this.loadPhones(this.formGroup.get("userId").value);
           }, httpError => {
@@ -221,7 +216,7 @@ export class UserDetailComponent implements OnInit {
           });
       } else {
         //add to user phone list since user doesn't exist yet
-        this.phonesControl.push(this.addPhone(phone));
+        this.phonesControl.push(this.addPhone(valueToSave));
       }
   }
 

@@ -28,4 +28,8 @@ export class PhoneService {
       return this.http.post<PhoneModel>(`${BASE_URL}/${userId}/phones`, phone);
   }
 
+  makePrimary(phone: PhoneModel): Observable<PhoneModel> {
+    return this.http.put<PhoneModel>(`${BASE_URL}/${phone.userId}/phones/makePrimary/${phone.phoneId}`, phone);
+  }
+
 }
