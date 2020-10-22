@@ -15,6 +15,7 @@ export class UserDetailComponent implements OnInit {
 
   formGroup = this.createFormGroup();
   newPhoneRowVisible = false;
+  newPhoneId: string;
 
   constructor(private formBuilder: FormBuilder,
               private userService: UserService,
@@ -52,7 +53,7 @@ export class UserDetailComponent implements OnInit {
           }
       }
     });
-    console.log("after load: ", this.phonesControl.controls);
+    //console.log("after load: ", this.phonesControl.controls);
   }
         //console.log(this.formGroup.get("phones"));
         //console.log(this.formGroup.get('phones').value);
@@ -161,14 +162,6 @@ export class UserDetailComponent implements OnInit {
     this.router.navigateByUrl("users");
   }
 
-  //change="makePrimary(${i})"
-  handleRadioChange(index: number) {
-  this.phonesControl.value.forEach(phone => {
-        phone.primaryPhone = false;
-      })
-      this.phonesControl.value.at(index).primaryPhone = true;
-  }
-
   checkVerified(verify: any) {
     if(verify === true){
       return true;
@@ -183,7 +176,7 @@ export class UserDetailComponent implements OnInit {
 
   isPrimaryPhone(index: number) {
   const phoneToCheck = this.phonesControl.at(index).value.primaryPhone;
-  console.log("primary for phone " + index + " is " + phoneToCheck);
+  //console.log("primary for phone " + index + " is " + phoneToCheck);
     if(phoneToCheck) {
       return phoneToCheck === true ? true : false;
     } else {
@@ -200,10 +193,13 @@ export class UserDetailComponent implements OnInit {
     valueToSave.userId = this.formGroup.get("userId").value as string;
     valueToSave.primaryPhone = this.formGroup.get("newPhone").get("primaryPhone").value === true ? true : false;
 
-    console.log("The phone to be created: " + valueToSave.userId + " " + valueToSave.phoneNumber + " " + valueToSave.primaryPhone);
+    //console.log("The phone to be created: " + valueToSave.userId + " " + valueToSave.phoneNumber + " " + valueToSave.primaryPhone);
     if(valueToSave.userId) {
-        this.phoneService.save(valueToSave, valueToSave.userId).subscribe(phone => {
+        this.phoneService.save(valueToSave, valueToSave.userId).subscribe((phone) => {
           this.newPhoneRowVisible = false;
+          if(valueToSave.primaryPhone === true) {
+            this.makePrimary(phone);
+          }
           this.loadPhones(this.formGroup.get("userId").value);
           }, httpError => {
             if(httpError.status === 400) {
@@ -214,10 +210,24 @@ export class UserDetailComponent implements OnInit {
                 console.log("oh no something horrible went awry saving the phone");
             }
           });
+
       } else {
         //add to user phone list since user doesn't exist yet
         this.phonesControl.push(this.addPhone(valueToSave));
       }
   }
+
+  makePrimary(phone: PhoneModel) {
+    this.phoneService.makePrimary(phone).subscribe((newPrimaryPhone) => {
+
+    }, httpError => {
+      if(httpError.status === 400) {
+
+      } else {
+        console.log("oh no something horrible went awry making the phone primary");
+      }
+    });
+  }
+
 
 }
