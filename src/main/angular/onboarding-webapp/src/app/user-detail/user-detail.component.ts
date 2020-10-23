@@ -15,7 +15,6 @@ export class UserDetailComponent implements OnInit {
 
   formGroup = this.createFormGroup();
   newPhoneRowVisible = false;
-  newPhoneId: string;
 
   constructor(private formBuilder: FormBuilder,
               private userService: UserService,
@@ -33,7 +32,10 @@ export class UserDetailComponent implements OnInit {
 //           this.loadPhones(userId);
 //         }
       }
+      if(userId) {} else { this.showPhoneForm(); }
+
     })
+
   }
 
   private loadUser(userId: string) {
@@ -210,14 +212,26 @@ export class UserDetailComponent implements OnInit {
     }
   }
 
+  isNewUser() {
+    if(this.formGroup.get("userId").value === null && this.phonesControl.length == 0) {
+      this.formGroup.get("newPhone").value.primaryPhone = true
+      //console.log(this.formGroup.get("newPhone").value);
+      return true;
+    } else {
+      //this.formGroup.get("newPhone").value.primaryPhone = false
+      return false;
+    }
+  }
+
   showPhoneForm() {
     this.newPhoneRowVisible = true;
+    this.isNewUser();
   }
 
   addNewPhone() {
     var valueToSave = this.formGroup.get("newPhone").value as PhoneModel;
     valueToSave.userId = this.formGroup.get("userId").value as string;
-    valueToSave.primaryPhone = this.formGroup.get("newPhone").get("primaryPhone").value === true ? true : false;
+    valueToSave.primaryPhone = valueToSave.primaryPhone === true ? true : false;
 
     //console.log("The phone to be created: " + valueToSave.userId + " " + valueToSave.phoneNumber + " " + valueToSave.primaryPhone);
     if(valueToSave.userId) {

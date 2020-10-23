@@ -2,7 +2,7 @@
 <header class="display-4">User Details</header>
 <hr/>
 <div class="row" mb-5>
-  <div class="col-md-6">
+  <div class="col-md-7">
     <form [formGroup]="formGroup">
       <div class="form-group">
         <label for="firstName">First name</label>
@@ -58,9 +58,9 @@
             </td>
           </tr>
           <tr *ngIf="newPhoneRowVisible == false" colspan="3" class="text-center">
-              <a class="btn btn-sm btn-primary pt-0 mt-2 border-0" (click)="showPhoneForm()">+ Add New Phone</a>
+              <a class="btn btn-sm btn-primary pt-0 mt-2 ml-2 border-0 float-left" (click)="showPhoneForm()">+ Add New Phone</a>
           </tr>
-          <tr *ngIf="newPhoneRowVisible" [formGroup]="newPhoneFormGroup">
+          <tr [formGroup]="newPhoneFormGroup" *ngIf="newPhoneRowVisible">
             <td>
               <small for="phoneNumber">Enter Phone Number:</small>
               <input type="tel" pattern="\([0-9]{3}\)[0-9]{3}[-][0-9]{4}" formControlName="phoneNumber"
@@ -69,10 +69,10 @@
                 {{newPhoneNumberControl.errors}}</small>
             </td>
             <td>
-              <small for="primaryNumber">Set as Primary</small>
+              <small class="" for="primaryNumber">Set as Primary</small>
               <div class="form-check">
-                <input type="checkbox" class="form-check-input mt-2 float-left" id="primaryNumber"
-                       formControlName="primaryPhone">
+                <input type="checkbox" class="form-check-input mt-2 position-static float-left"
+                       id="primaryNumber" [checked]="isNewUser() === true" [value]="newPhonePrimaryControl">
               </div>
             </td>
             <td >
