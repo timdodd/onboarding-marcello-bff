@@ -89,7 +89,6 @@ export class UserDetailComponent implements OnInit {
       verificationCode: phone.verificationCode,
       time: phone.time
     });
-
   }
 
   get firstNameControl(): FormControl {
@@ -126,7 +125,7 @@ export class UserDetailComponent implements OnInit {
 
   save() {
     const valueToSave = this.formGroup.value as UserModel;
-    this.userService.save(valueToSave).subscribe(savedValue => {
+    this.userService.save(valueToSave).subscribe((savedValue) => {
       this.router.navigateByUrl("users");
     }, httpError => {
       if (httpError.status === 400) {
@@ -139,24 +138,48 @@ export class UserDetailComponent implements OnInit {
     })
   }
 
-  savePhones() {
+//   savePhones(userId: string) {
+//
+//     var valuesToSave = this.formGroup.get("phones").value as PhoneModel[];
+//     valuesToSave.forEach(phone => phone.userId = userId);
+//     console.log(this.formGroup.get("phones").value);
+//
+// //     for(var i = 0; i < valuesToSave.length; i++) {
+// //     console.log(valuesToSave[i]);
+// //
+// //      this.phoneService.save(valuesToSave[i], valuesToSave[i].userId).subscribe((savedValue) => {
+// //             //this.router.navigateByUrl("users");
+// //      }, httpError => {
+// //        if (httpError.status === 400) {
+// //          Object.keys(httpError.error).forEach(key => {
+// //            console.log(this.formGroup.get("phones"))
+// //            this.formGroup.get("phones").get(key).setErrors(httpError.error[key]);
+// //          });
+// //        } else {
+// //          console.log("oh no something horrible went awry saving phones");
+// //        }
+// //      })
+// //
+// //     }
+//     valuesToSave.forEach(phone => {
+//       console.log("phoneModel", phone);
+//
+//       this.phoneService.save(phone, phone.userId).subscribe((savedValue) => {
+//         //this.router.navigateByUrl("users");
+//       }, httpError => {
+//         if (httpError.status === 400) {
+//           Object.keys(httpError.error).forEach(key => {
+//             this.formGroup.get("phones").get(key).setErrors(httpError.error[key]);
+//           });
+//         } else {
+//           console.log("oh no something horrible went awry saving phones");
+//         }
+//       })
+//
+//     })
+//
+//   }
 
-    const valuesToSave = this.formGroup.get("phones").value as PhoneModel[];
-    valuesToSave.forEach(phone => {
-      this.phoneService.save(phone, phone.userId).subscribe(savedValue => {
-        //this.router.navigateByUrl("users");
-      }, httpError => {
-        if (httpError.status === 400) {
-          Object.keys(httpError.error).forEach(key => {
-            this.formGroup.get(key).setErrors(httpError.error[key]);
-          });
-        } else {
-          console.log("oh no something horrible went awry saving phones");
-        }
-      })
-    })
-
-  }
 
   cancel() {
     this.router.navigateByUrl("users");
@@ -214,6 +237,8 @@ export class UserDetailComponent implements OnInit {
       } else {
         //add to user phone list since user doesn't exist yet
         this.phonesControl.push(this.addPhone(valueToSave));
+        this.newPhoneRowVisible = false;
+        this.formGroup.get("newPhone").reset();
       }
   }
 
