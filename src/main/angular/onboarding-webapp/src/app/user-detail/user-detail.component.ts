@@ -29,9 +29,9 @@ export class UserDetailComponent implements OnInit {
       const userId = params.get("userId");
       if(params) {
         this.loadUser(userId);
-        if(userId) {
-          this.loadPhones(userId);
-        }
+//         if(userId) {
+//           this.loadPhones(userId);
+//         }
       }
     })
   }
@@ -39,6 +39,13 @@ export class UserDetailComponent implements OnInit {
   private loadUser(userId: string) {
     this.userService.get(userId).subscribe(user => {
       this.formGroup.patchValue(user);
+      if(user.phones) {
+        for(let i = 0; i < user.phones.length; i++) {
+            if((<FormArray>this.formGroup.get("phones")).at(i) == null){
+               (<FormArray>this.formGroup.get("phones")).push(this.addPhone(user.phones[i]));
+            }
+        }
+      }
     });
   }
 
@@ -47,16 +54,12 @@ export class UserDetailComponent implements OnInit {
   //console.log("before load: ", this.phonesControl);
     this.phoneService.findUserPhones(userId).subscribe(phones => {
       for(let i = 0; i < phones.length; i++) {
-          if((<FormArray>this.formGroup.get("phones")).at(i) == null)
-          {
+          if((<FormArray>this.formGroup.get("phones")).at(i) == null){
              (<FormArray>this.formGroup.get("phones")).push(this.addPhone(phones[i]));
           }
       }
     });
-    //console.log("after load: ", this.phonesControl.controls);
   }
-        //console.log(this.formGroup.get("phones"));
-        //console.log(this.formGroup.get('phones').value);
   }
 
 //took a while to get right
