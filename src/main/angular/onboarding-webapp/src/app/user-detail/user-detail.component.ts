@@ -5,6 +5,7 @@ import {PhoneService} from "../service/phone.service";
 import {ActivatedRoute, Router} from "@angular/router";
 import {UserModel} from "../model/user.model";
 import {PhoneModel} from "../model/phone.model";
+import {NgbModal, NgbActiveModal, NgbModule} from '@ng-bootstrap/ng-bootstrap';
 
 @Component({
   selector: 'app-user-detail',
@@ -15,6 +16,7 @@ export class UserDetailComponent implements OnInit {
 
   formGroup = this.createFormGroup();
   newPhoneRowVisible = false;
+  verifyModalVisible = false;
 
   constructor(private formBuilder: FormBuilder,
               private userService: UserService,
@@ -43,7 +45,7 @@ export class UserDetailComponent implements OnInit {
       this.formGroup.patchValue(user);
       if(user.phones) {
         for(let i = 0; i < user.phones.length; i++) {
-            if((<FormArray>this.formGroup.get("phones")).at(i) == null){
+            if((<FormArray>this.formGroup.get("phones")).at(i) == null && user.phones[i] != null){
                (<FormArray>this.formGroup.get("phones")).push(this.addPhone(user.phones[i]));
             }
         }
@@ -199,7 +201,22 @@ export class UserDetailComponent implements OnInit {
   }
 
   verifyPhone() {
+//     console.log(this.verifyModalVisible);
+    this.verifyModalVisible = true;
+  }
 
+  deletePhone(phone: FormGroup) {
+    if(phone) {
+      var valueToDelete = phone.value as PhoneModel;
+      //console.log(valueToDelete);
+      this.phoneService.delete(valueToDelete).subscribe((deleted) => {
+        //console.log(valueToDelete);
+        this.formGroup = this.createFormGroup();
+        this.loadUser(valueToDelete.userId);
+        }, httpError => {
+
+          });
+      }
   }
 
   isPrimaryPhone(index: number) {
@@ -212,9 +229,10 @@ export class UserDetailComponent implements OnInit {
     }
   }
 
-  isNewUser() {
-    if(this.formGroup.get("userId").value === null && this.phonesControl.length == 0) {
+  isFirstPhone() {
+    if(this.formGroup.get("userId").value === null || this.formGroup.get("phones").value.length == 0) {
       this.formGroup.get("newPhone").value.primaryPhone = true
+      //console.log(this.formGroup.get("newPhone").value.primaryPhone);
       //console.log(this.formGroup.get("newPhone").value);
       return true;
     } else {
@@ -223,15 +241,29 @@ export class UserDetailComponent implements OnInit {
     }
   }
 
+  phoneHeadersVisible() {
+    if(this.formGroup.get("phones").value && this.formGroup.get("phones").value.length > 0) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+
   showPhoneForm() {
     this.newPhoneRowVisible = true;
-    this.isNewUser();
+    this.isFirstPhone();
+  }
+
+  primaryCheckboxChange() {
+    this.formGroup.get("newPhone").value.primaryPhone = !this.formGroup.get("newPhone").value.primaryPhone;
   }
 
   addNewPhone() {
     var valueToSave = this.formGroup.get("newPhone").value as PhoneModel;
     valueToSave.userId = this.formGroup.get("userId").value as string;
-    valueToSave.primaryPhone = valueToSave.primaryPhone === true ? true : false;
+    valueToSave.primaryPhone = this.formGroup.get("newPhone").value.primaryPhone === true ? true : false;
+
+    //console.log(this.newPhonePrimaryControl);
 
     //console.log("The phone to be created: " + valueToSave.userId + " " + valueToSave.phoneNumber + " " + valueToSave.primaryPhone);
     if(valueToSave.userId) {
@@ -240,6 +272,7 @@ export class UserDetailComponent implements OnInit {
           if(valueToSave.primaryPhone === true) {
             this.makePrimary(phone);
           }
+          this.formGroup.get("newPhone").reset();
           this.loadPhones(this.formGroup.get("userId").value);
           }, httpError => {
             if(httpError.status === 400) {
@@ -257,6 +290,18 @@ export class UserDetailComponent implements OnInit {
         this.newPhoneRowVisible = false;
         this.formGroup.get("newPhone").reset();
       }
+  }
+
+  changePrimary(index: number) {
+    //this.makePrimary(this.phonesControl.value[index] as PhoneModel);
+    for(var i = 0; i < this.phonesControl.value.length; i++){
+          var phone = this.phonesControl.value[i] as PhoneModel;
+          if(i === index){
+            phone.primaryPhone = true;
+          } else {
+            phone.primaryPhone = false;
+          }
+        }
   }
 
   makePrimary(phone: PhoneModel) {

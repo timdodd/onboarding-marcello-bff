@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import {UserModel} from "../model/user.model";
 import {UserService} from "../service/user.service";
+import {PhoneService} from "../service/phone.service";
 import {Router} from "@angular/router";
 
 @Component({
@@ -11,6 +12,7 @@ import {Router} from "@angular/router";
 export class UserListComponent implements OnInit {
 
   constructor(private userService: UserService,
+              private phoneService: PhoneService,
               private router: Router) { }
 
   users: UserModel[] = [];
@@ -31,8 +33,17 @@ export class UserListComponent implements OnInit {
 
   delete(user: UserModel): void {
     if(user.userId) {
-      this.userService.delete(user.userId).subscribe();
-      this.ngOnInit();
+      user.phones.forEach(phone => {
+        if(phone) {
+          this.phoneService.delete(phone).subscribe((deleted) => {
+            //console.log(phone);
+          })
+        }
+      });
+      this.userService.delete(user.userId).subscribe((deleted) => {
+        this.users = [];
+        this.ngOnInit();
+      });
     }
   }
 }

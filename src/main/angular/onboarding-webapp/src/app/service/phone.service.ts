@@ -32,4 +32,8 @@ export class PhoneService {
     return this.http.put<PhoneModel>(`${BASE_URL}/${phone.userId}/phones/makePrimary/${phone.phoneId}`, phone);
   }
 
+  delete(phone: PhoneModel): Observable<Response> {
+      return this.http.delete<Response>(`${BASE_URL}/${phone.userId}/phones/${phone.phoneId}`);
+  }
+
 }
