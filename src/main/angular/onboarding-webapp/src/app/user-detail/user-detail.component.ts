@@ -5,7 +5,8 @@ import {PhoneService} from "../service/phone.service";
 import {ActivatedRoute, Router} from "@angular/router";
 import {UserModel} from "../model/user.model";
 import {PhoneModel} from "../model/phone.model";
-import {NgbModal, NgbActiveModal, NgbModule} from '@ng-bootstrap/ng-bootstrap';
+import { MatDialog, MatDialogConfig } from "@angular/material/dialog";
+import { VerifyDialogComponent } from '../verify-dialog/verify-dialog.component';
 
 @Component({
   selector: 'app-user-detail',
@@ -16,14 +17,31 @@ export class UserDetailComponent implements OnInit {
 
   formGroup = this.createFormGroup();
   newPhoneRowVisible = false;
-  verifyModalVisible = false;
+  verifyDialog: VerifyDialogComponent;
 
   constructor(private formBuilder: FormBuilder,
               private userService: UserService,
               private phoneService: PhoneService,
               private router: Router,
-              private activatedRoute: ActivatedRoute) {
+              private activatedRoute: ActivatedRoute,
+              private dialog: MatDialog) {
   }
+
+  openModal(phone: PhoneModel) {
+    const dialogConfig = new MatDialogConfig();
+    dialogConfig.disableClose = true;
+    dialogConfig.autoFocus = true;
+    dialogConfig.data = {
+    id: 1,
+    title: "Phone Number Verification",
+    phone: phone
+  };
+  //console.log(dialogConfig);
+  //console.log(this.dialog);
+
+  this.dialog.open(VerifyDialogComponent, dialogConfig);
+}
+
 
   ngOnInit(): void {
     this.activatedRoute.paramMap.subscribe(params => {
@@ -200,9 +218,9 @@ export class UserDetailComponent implements OnInit {
     }
   }
 
-  verifyPhone() {
-//     console.log(this.verifyModalVisible);
-    this.verifyModalVisible = true;
+  verifyPhone(index: number) {
+    var phone = this.formGroup.get("phones").value[index] as PhoneModel;
+    this.openModal(phone);
   }
 
   deletePhone(phone: FormGroup) {

@@ -1,0 +1,39 @@
+
+
+<h2 mat-dialog-title>{{modalTitle}}</h2>
+<mat-dialog-content>A code was sent to {{phone.phoneNumber}}. Enter it here: </mat-dialog-content>
+<mat-dialog-actions [formGroup]="formGroup">
+  <input formControlName="verificationCode"/>
+</mat-dialog-actions>
+<mat-dialog-actions class="mt-3">
+<!--  <button mat-button [mat-dialog-close]="true">Submit</button>-->
+  <button mat-button [mat-dialog-close]="true" (click)="submit()">Submit</button>
+  <button mat-button mat-dialog-close>Cancel</button>
+<!--  <! — The mat-dialog-close directive optionally accepts a value as a result for the dialog.&ndash;&gt;-->
+</mat-dialog-actions>
+
+
+
+
+
+
+
+<!--<div class="modal fade" id="verifyModal" tabindex="-1" aria-labelledby="verifyModalLabel" aria-hidden="true">-->
+<!--  <div class="modal-dialog" role="document">-->
+<!--    <div class="modal-content">-->
+<!--      <div class="modal-header">-->
+<!--        <h5 class="modal-title" id="verifyModalLabel">Phone Verification</h5>-->
+<!--        <button type="button" class="close" data-dismiss="modal" aria-label="Close">-->
+<!--          <span aria-hidden="true">&times;</span>-->
+<!--        </button>-->
+<!--      </div>-->
+<!--      <div class="modal-body">-->
+<!--        ...-->
+<!--      </div>-->
+<!--      <div class="modal-footer">-->
+<!--        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>-->
+<!--        <button type="button" class="btn btn-primary">Save changes</button>-->
+<!--      </div>-->
+<!--    </div>-->
+<!--  </div>-->
+<!--</div>-->

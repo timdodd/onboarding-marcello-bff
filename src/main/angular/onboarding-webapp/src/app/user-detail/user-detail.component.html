@@ -56,7 +56,7 @@
             </td>
             <td *ngIf="checkVerified(verified) == false">
               <button type="button" class="btn btn-sm btn-link pt-0 mt-0 border-0"
-              (click)="verifyPhone()">Verify</button>
+              (click)="verifyPhone(i)">Verify</button>
             </td>
             <td>
               <button type="button" class="btn btn-link btn-sm pt-0 mt-0 border-0" tooltip="Delete phone."
@@ -94,28 +94,5 @@
     <button class="btn btn-primary" (click)="save()">Save</button>
     <button class="btn btn-link" (click)="cancel()">Cancel</button>
 <!--    <button class="btn btn-link float-right"  (click)='delete()'>Delete</button>-->
-  </div>
-</div>
-
-
-<!--tabindex="-1" aria-labelledby="verifyModalLabel"  aria-hidden="true"-->
-
-<div class="modal fade" id="verifyModal" *ngIf="verifyModalVisible">
-  <div class="modal-dialog" role="document">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title" id="verifyModalLabel">Phone Verification</h5>
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-          <span aria-hidden="true">&times;</span>
-        </button>
-      </div>
-      <div class="modal-body">
-        ...
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-        <button type="button" class="btn btn-primary">Save changes</button>
-      </div>
-    </div>
   </div>
 </div>

@@ -3,6 +3,7 @@ import { Routes, RouterModule } from '@angular/router';
 import {HashLocationStrategy, LocationStrategy} from "@angular/common";
 import {UserListComponent} from "./user-list/user-list.component";
 import {UserDetailComponent} from "./user-detail/user-detail.component";
+import {VerifyDialogComponent} from './verify-dialog/verify-dialog.component';
 
 const routes: Routes = [
   {
@@ -14,8 +15,8 @@ const routes: Routes = [
     component: UserDetailComponent,
   },
 //   {
-//   path: "users/newUser",
-//   component: UserDetailComponent,
+//   path: "users/:userId/phones/verify",
+//   component: VerifyDialogComponent,
 //   },
   {
     path: "**",
