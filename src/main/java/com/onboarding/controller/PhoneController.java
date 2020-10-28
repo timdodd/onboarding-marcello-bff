@@ -68,8 +68,9 @@ public class PhoneController {
 
     @PostMapping("/{userId}/phones/{phoneId}/verify")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void verify(@PathVariable("phoneId") UUID phoneId, @RequestBody PhoneVerificationDto dto) {
-        phoneClient.verify(phoneId, dto);
+    public void verify(@PathVariable("phoneId") UUID phoneId, @PathVariable("userId") UUID userId,
+                       @RequestBody PhoneVerificationDto dto) {
+        phoneClient.verify(phoneId, userId, dto);
     }
 
 //    @GetMapping("/{userId}/phones/primaryPhone")

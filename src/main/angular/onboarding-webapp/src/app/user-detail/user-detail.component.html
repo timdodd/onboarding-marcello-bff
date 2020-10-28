@@ -26,7 +26,7 @@
             <tr *ngIf="phoneHeadersVisible() === true">
               <th>Phone Numbers</th>
               <th>Primary</th>
-              <th>Verified</th>
+              <th *ngIf="userExists() === true">Verified</th>
               <th></th>
 <!--              <th>-->
 <!--&lt;!&ndash;              <a class="btn btn-primary p-1 m-0 border-0" (click)="newPhone(null)">Add</a>&ndash;&gt;-->
@@ -38,7 +38,7 @@
               formGroupName="{{i}}">
             <td>
               <input type="tel" pattern="\([0-9]{3}\)[0-9]{3}[-][0-9]{4}" [class.is-invalid]="phone.errors"
-                     class="form-control" id='phone${i}' formControlName="phoneNumber">
+                     class="form-control" formControlName="phoneNumber">
               <small *ngIf="phone.errors" class="text-danger">{{phone.errors}}</small>
             </td>
             <td>
@@ -48,17 +48,15 @@
                        [checked]="isPrimaryPhone(i) === true" (change)="changePrimary(i)">
               </div>
             </td>
-            <td *ngIf="checkVerified(verified) == true">
-              <div class="form-check" >
+            <td *ngIf="userExists() === true">
+              <div class="form-check" *ngIf="checkVerified(i) === true">
                 <input type="checkbox" class="form-check-input" id="verified${i}"
                        formControlName="verified" disabled="primaryPhoneCheckboxDisabled">
               </div>
-            </td>
-            <td *ngIf="checkVerified(verified) == false">
               <button type="button" class="btn btn-sm btn-link pt-0 mt-0 border-0"
-              (click)="verifyPhone(i)">Verify</button>
+                      (click)="verifyPhone(i)" *ngIf="checkVerified(i) === false">Verify</button>
             </td>
-            <td>
+            <td *ngIf="userExists() === true">
               <button type="button" class="btn btn-link btn-sm pt-0 mt-0 border-0" tooltip="Delete phone."
                       (click)='deletePhone(phone)'>Delete</button>
             </td>

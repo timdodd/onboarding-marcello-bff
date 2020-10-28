@@ -2,6 +2,7 @@ import {Injectable} from '@angular/core';
 import {PhoneModel} from "../model/phone.model";
 import {Observable} from "rxjs";
 import {HttpClient} from "@angular/common/http";
+import {PhoneVerificationModel} from "../model/phoneVerification.model";
 
 const BASE_URL = "./api/v1/users";
 
@@ -34,6 +35,17 @@ export class PhoneService {
 
   delete(phone: PhoneModel): Observable<Response> {
       return this.http.delete<Response>(`${BASE_URL}/${phone.userId}/phones/${phone.phoneId}`);
+  }
+
+  sendVerification(phone: PhoneModel): Observable<Response> {
+    //console.log("in sendVerification: ", phone);
+    return this.http.post<Response>(`${BASE_URL}/${phone.userId}/phones/${phone.phoneId}/sendVerification`, null);
+  }
+
+  verify(phone: PhoneModel, phoneVerification: PhoneVerificationModel): Observable<Response> {
+    //console.log("in verify: ", phone);
+    //console.log("in verify: ", phoneVerification);
+    return this.http.post<Response>(`${BASE_URL}/${phone.userId}/phones/${phone.phoneId}/verify`, phoneVerification);
   }
 
 }

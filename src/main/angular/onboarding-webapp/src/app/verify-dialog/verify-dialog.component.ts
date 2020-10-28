@@ -4,6 +4,8 @@ import {PhoneModel} from "../model/phone.model";
 import {FormBuilder, FormControl, FormGroup, FormArray} from "@angular/forms";
 import { MatDialog, MatDialogConfig } from "@angular/material/dialog";
 import { MatInput } from "@angular/material/input";
+import {PhoneService} from "../service/phone.service";
+import {PhoneVerificationModel} from "../model/phoneVerification.model";
 
 @Component({
   selector: 'app-verify-dialog',
@@ -15,9 +17,11 @@ export class VerifyDialogComponent implements OnInit {
   modalTitle: string;
   formGroup = this.createFormGroup();
   phone: PhoneModel;
+  phoneVerification: PhoneVerificationModel;
 
   constructor(private formBuilder: FormBuilder,
               private dialogRef: MatDialogRef<VerifyDialogComponent>,
+              private phoneService: PhoneService,
               @Inject(MAT_DIALOG_DATA) data) {
 
                 this.phone = data.phone;
@@ -28,28 +32,32 @@ export class VerifyDialogComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.formGroup.patchValue(this.phone);
-    console.log(this.formGroup);
+    //this.formGroup.patchValue(this.phone);
+    //console.log(this.formGroup);
+    this.phoneService.sendVerification(this.phone).subscribe();
   }
 
 
   private createFormGroup(): FormGroup {
     return this.formBuilder.group({
-        phoneId: null,
-        userId: null,
-        phoneNumber: null,
-        primaryPhone: null,
-        verified: null,
-        verificationCode: null,
-        time: null,
+        code: null,
     });
   }
 
   submit() {
-    if(this.formGroup.get("verificationCode").value)
+    //console.log(this.formGroup.value);
+    if(this.formGroup.get("code").value)
     {
+      this.phoneVerification = this.formGroup.value as PhoneVerificationModel;
+      //console.log("phoneToVerify: ", this.phoneVerification)
+      this.phoneService.verify(this.phone, this.phoneVerification).subscribe((verified) => {
+        this.formGroup.reset();
+        this.dialogRef.close(true);
+      }, httpErrors => {
 
-      //console.log(this.formGroup.get("verificationCode").value);
+      });
+
+      this.dialogRef.close();
     }
   }
 

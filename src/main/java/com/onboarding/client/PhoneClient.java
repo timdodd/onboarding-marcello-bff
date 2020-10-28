@@ -69,9 +69,10 @@ public class PhoneClient {
                 .post(Entity.json(null));
     }
 
-    public void verify(UUID phoneId, PhoneVerificationDto dto) {
+    public void verify(UUID phoneId, UUID userId, PhoneVerificationDto dto) {
         phoneTarget(phoneId)
                 .path("verify")
+                .resolveTemplate("userId", userId)
                 .request()
                 .post(Entity.json(dto));
     }

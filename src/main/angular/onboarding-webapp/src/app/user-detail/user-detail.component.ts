@@ -39,7 +39,15 @@ export class UserDetailComponent implements OnInit {
   //console.log(dialogConfig);
   //console.log(this.dialog);
 
-  this.dialog.open(VerifyDialogComponent, dialogConfig);
+  const dialogRef = this.dialog.open(VerifyDialogComponent, dialogConfig);
+
+  dialogRef.afterClosed().subscribe((data) => {
+    if(data) {
+      const userId = this.formGroup.get("userId").value as string;
+      this.formGroup.reset();
+      this.loadUser(userId);
+    }
+  });
 }
 
 
@@ -210,11 +218,22 @@ export class UserDetailComponent implements OnInit {
     this.router.navigateByUrl("users");
   }
 
-  checkVerified(verify: any) {
-    if(verify === true){
+  userExists() {
+    if(this.formGroup.get("userId").value){
       return true;
-    } else {
-      return false;
+    }
+    return false;
+  }
+
+  checkVerified(index: number) {
+    var phone = this.formGroup.get("phones").value[index] as PhoneModel;
+    if(phone){
+    //console.log("Phone number: " + phone.phoneNumber + " verified: " + phone.verified);
+      if(phone.verified === true){
+        return true;
+      } else {
+        return false;
+      }
     }
   }
 
@@ -248,7 +267,7 @@ export class UserDetailComponent implements OnInit {
   }
 
   isFirstPhone() {
-    if(this.formGroup.get("userId").value === null || this.formGroup.get("phones").value.length == 0) {
+    if(this.formGroup.get("phones").value.length == 0) {
       this.formGroup.get("newPhone").value.primaryPhone = true
       //console.log(this.formGroup.get("newPhone").value.primaryPhone);
       //console.log(this.formGroup.get("newPhone").value);
