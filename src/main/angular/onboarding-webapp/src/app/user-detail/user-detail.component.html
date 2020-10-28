@@ -42,7 +42,7 @@
               <small *ngIf="phone.errors" class="text-danger">{{phone.errors}}</small>
             </td>
             <td>
-              <div class="form-check">
+              <div class="form-check mt-1">
                 <!--                ask about the radio buttons - may need to check that I'm loading forms correctly-->
                 <input type="radio" class="form-check-input" [value]="isPrimaryPhone(i)" name="primary"
                        [checked]="isPrimaryPhone(i) === true" (change)="changePrimary(i)">
@@ -61,28 +61,31 @@
                       (click)='deletePhone(phone)'>Delete</button>
             </td>
           </tr>
-          <tr *ngIf="newPhoneRowVisible == false" colspan="3" class="text-center">
-              <a class="btn btn-sm btn-primary pt-0 mt-2 ml-2 border-0 float-left" (click)="showPhoneForm()">+ Add New Phone</a>
+          <tr *ngIf="newPhoneRowVisible == false">
+            <td colspan="4" style="text-align:center;">
+              <a class="btn btn-sm btn-primary pt-0 border-0" (click)="showPhoneForm()">+ Add New Phone</a>
+            </td>
           </tr>
           <tr [formGroup]="newPhoneFormGroup" *ngIf="newPhoneRowVisible">
             <td>
               <small for="phoneNumber">Enter Phone Number:</small>
               <input type="tel" pattern="\([0-9]{3}\)[0-9]{3}[-][0-9]{4}" formControlName="phoneNumber"
-                     class="form-control mt-2" id='phoneNumber' placeholder="(123)456-789"
-                     title="e.g. (123)456-7890">
-              <small [*ngIf]="newPhoneNumberControl.errors" class="text-danger">
-                {{newPhoneNumberControl.errors}}</small>
+                     class="form-control mt-2" id='phoneNumber' placeholder="(306)123-4567">
+              <small *ngIf="newPhoneNumberControl.errors" class="text-danger">
+                Incorrect format</small>
             </td>
             <td>
-              <small class="" for="primaryNumber">Set as Primary</small>
+              <small class="" for="primaryNumber">Primary:</small><!--              Set as Primary-->
               <div class="form-check">
-                <input type="checkbox" class="form-check-input mt-2 position-static float-left"
+                <input type="checkbox" class="form-check-input mt-3 position-static float-left"
                        id="primaryNumber" [checked]="isFirstPhone() === true" [value]="newPhonePrimaryControl"
                        (change)="primaryCheckboxChange()">
               </div>
             </td>
             <td >
-                <a class="btn btn-sm btn-primary mt-4 border-0" (click)="addNewPhone()">Add</a>
+              <div class="mt-2">
+                <a class="btn btn-sm btn-primary mt-4" (click)="addNewPhone()">Add</a>
+              </div>
             </td>
           </tr>
           </tbody>
