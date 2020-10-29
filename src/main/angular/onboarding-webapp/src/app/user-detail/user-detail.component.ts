@@ -1,5 +1,5 @@
 import {Component, OnInit} from '@angular/core';
-import {FormBuilder, FormControl, FormGroup, FormArray} from "@angular/forms";
+import {FormBuilder, FormControl, FormGroup, FormArray, ValidationErrors} from "@angular/forms";
 import {UserService} from "../service/user.service";
 import {PhoneService} from "../service/phone.service";
 import {ActivatedRoute, Router} from "@angular/router";
@@ -61,13 +61,14 @@ export class UserDetailComponent implements OnInit {
   private loadUser(userId: string) {
     this.userService.get(userId).subscribe(user => {
       this.formGroup.patchValue(user);
-      if(user.phones) {
-        for(let i = 0; i < user.phones.length; i++) {
-            if((<FormArray>this.formGroup.get("phones")).at(i) == null && user.phones[i] != null){
-               (<FormArray>this.formGroup.get("phones")).push(this.addPhone(user.phones[i]));
-            }
-        }
-      }
+      this.loadPhones(user.userId);
+//       if(user.phones) {
+//         for(let i = 0; i < user.phones.length; i++) {
+//             if((<FormArray>this.formGroup.get("phones")).at(i) == null && user.phones[i] != null){
+//                (<FormArray>this.formGroup.get("phones")).push(this.addPhone(user.phones[i]));
+//             }
+//         }
+//       }
     });
   }
 
@@ -157,7 +158,17 @@ export class UserDetailComponent implements OnInit {
     }, httpError => {
       if (httpError.status === 400) {
         Object.keys(httpError.error).forEach(key => {
-          this.formGroup.get(key).setErrors(httpError.error[key]);
+          if(this.formGroup.get(key)){
+            //for user errors
+            this.formGroup.get(key).setErrors(httpError.error[key]);
+          } else {
+            //for user.phones[] errors
+           for(var i = 0; i < this.formGroup.get("phones").value.length; i++) {
+              if(key.includes(i+"") && key.includes("phoneNumber")) {
+                this.phonesControl.controls[i].setErrors(httpError.error[key]);
+              }
+            }
+          }
         });
       } else {
         console.log("oh no something horrible went awry saving user");

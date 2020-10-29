@@ -36,6 +36,7 @@
           <tbody formArrayName="phones">
           <tr [formGroup]="formGroup" *ngFor="let phone of phonesControl.controls; let i = index"
               formGroupName="{{i}}">
+<!--            <small *ngIf="phonesControl.errors" class="text-danger">{{phone.errors}}</small>-->
             <td>
               <input type="tel" pattern="\([0-9]{3}\)[0-9]{3}[-][0-9]{4}" [class.is-invalid]="phone.errors"
                      class="form-control" formControlName="phoneNumber">

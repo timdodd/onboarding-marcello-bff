@@ -41,7 +41,7 @@ public class UserController {
 	@PutMapping("/{userId}")
 	public UserDto update(@PathVariable("userId") UUID userId,
 						  @RequestBody UserDto dto) {
-		dto.setUserId(userId);
+		//dto.setUserId(userId);
 		return userClient.update(dto);
 	}
 
