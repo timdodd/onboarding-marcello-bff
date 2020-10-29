@@ -71,9 +71,11 @@
             <td>
               <small for="phoneNumber">Enter Phone Number:</small>
               <input type="tel" pattern="\([0-9]{3}\)[0-9]{3}[-][0-9]{4}" formControlName="phoneNumber"
-                     class="form-control mt-2" id='phoneNumber' placeholder="(306)123-4567">
+                     class="form-control mt-2" id='phoneNumber' placeholder="(306)123-4567" (change)="changeFormatError()">
               <small *ngIf="newPhoneNumberControl.errors" class="text-danger">
-                Incorrect format</small>
+                {{newPhoneErrorMessages}}</small>
+<!--              <small *ngIf="newPhoneNumberControl.errors && newPhoneNumberControl.errors.pattern" class="text-danger">-->
+<!--                {{newPhoneNumberControl.errors.pattern.requiredPattern}}</small>-->
             </td>
             <td>
               <small class="" for="primaryNumber">Primary:</small><!--              Set as Primary-->
@@ -86,6 +88,11 @@
             <td >
               <div class="mt-2">
                 <a class="btn btn-sm btn-primary mt-4" (click)="addNewPhone()">Add</a>
+              </div>
+            </td>
+            <td >
+              <div class="mt-2">
+                <a class="btn btn-sm btn-link mt-4" (click)="cancelPhone()">Cancel</a>
               </div>
             </td>
           </tr>
