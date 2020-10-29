@@ -69,13 +69,12 @@
           </tr>
           <tr [formGroup]="newPhoneFormGroup" *ngIf="newPhoneRowVisible">
             <td>
-              <small for="phoneNumber">Enter Phone Number:</small>
-              <input type="tel" pattern="\([0-9]{3}\)[0-9]{3}[-][0-9]{4}" formControlName="phoneNumber"
-                     class="form-control mt-2" id='phoneNumber' placeholder="(306)123-4567" (change)="changeFormatError()">
+              <small for="phoneNumber">Enter 10-digit number:</small>
+              <input (input)="formatPhoneNumber()" type="tel" pattern="\([0-9]{3}\)[0-9]{3}[-][0-9]{4}" id='phoneNumber'
+                     formControlName="phoneNumber" class="form-control mt-2" placeholder="xxxxxxxxxx"
+                     (change)="changeFormatError()">
               <small *ngIf="newPhoneNumberControl.errors" class="text-danger">
                 {{newPhoneErrorMessages}}</small>
-<!--              <small *ngIf="newPhoneNumberControl.errors && newPhoneNumberControl.errors.pattern" class="text-danger">-->
-<!--                {{newPhoneNumberControl.errors.pattern.requiredPattern}}</small>-->
             </td>
             <td>
               <small class="" for="primaryNumber">Primary:</small><!--              Set as Primary-->

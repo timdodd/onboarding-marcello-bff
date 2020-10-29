@@ -43,7 +43,7 @@ public class PhoneController {
             @PathVariable("phoneId") UUID phoneId,
             @RequestBody PhoneDto dto) {
 
-        dto.setUserId(userId).setPhoneId(phoneId);
+        //dto.setUserId(userId).setPhoneId(phoneId);
         return phoneClient.update(dto);
     }
 

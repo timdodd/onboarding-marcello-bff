@@ -33,7 +33,6 @@ export class UserDetailComponent implements OnInit {
         this.loadUser(userId);
       }
       if(userId) {} else { this.showPhoneForm(); }
-
     })
   }
 
@@ -185,6 +184,11 @@ export class UserDetailComponent implements OnInit {
         this.formGroup = this.createFormGroup();
         this.loadUser(valueToDelete.userId);
         }, httpError => {
+          if(httpError.status === 400) {
+
+          } else {
+            console.log("oh no something horrible went awry deleting phone");
+          }
 
           });
       }
@@ -324,7 +328,37 @@ export class UserDetailComponent implements OnInit {
 
   changeFormatError() {
     if(this.newPhoneNumberControl. errors && this.newPhoneNumberControl.errors.pattern) {
-      this.newPhoneNumberControl.errors.pattern.requiredPattern = "Incorrect format. Use e.g.\n (306)123-4567";
+      this.newPhoneNumberControl.errors.pattern.requiredPattern = "Incorrect format. Enter 10 digits.\n Auto formats to: (XXX)123-4567";
+    }
+  }
+
+  //is there already an algorithm for this? is this too brute-force?
+  formatPhoneNumber() {
+    //for copy-paste a number
+    var checkNumber = this.newPhoneNumberControl.value;
+    if(checkNumber.length == 10 && !checkNumber.includes("(")
+          && !checkNumber.includes(")") && !checkNumber.includes("-")) {
+       var areaCode = <string>"(" + this.newPhoneNumberControl.value.substring(0,3) + ")";
+       var officeCode = <string>this.newPhoneNumberControl.value.substring(3, 6) + "-";
+       var digitStationCode = <string>this.newPhoneNumberControl.value.substring(6, 10);
+       this.newPhoneNumberControl.patchValue(areaCode + officeCode + digitStationCode)
+       return;
+    }
+    if(this.newPhoneNumberControl.value.length == 3) {
+      var areaCode = <string>"(" + this.newPhoneNumberControl.value.replace(/\D/g, '') + ")";
+      this.newPhoneNumberControl.patchValue(areaCode);
+    }
+    if(this.newPhoneNumberControl.value.length == 8 && this.newPhoneNumberControl.value.includes("(")
+         && this.newPhoneNumberControl.value.includes(")")) {
+      var areaCode = <string>this.newPhoneNumberControl.value.substring(0, 5);
+      var officeCode = <string>this.newPhoneNumberControl.value.substring(5, 9) + "-";
+      this.newPhoneNumberControl.patchValue(areaCode + officeCode);
+    }
+    if(this.newPhoneNumberControl.value.length == 13) {
+      var areaCode = <string>this.newPhoneNumberControl.value.substring(0, 5);
+      var officeCode = <string>this.newPhoneNumberControl.value.substring(5, 10);
+      var digitStationCode = <string>this.newPhoneNumberControl.value.substring(10, 13);
+      this.newPhoneNumberControl.patchValue(areaCode + officeCode + digitStationCode);
     }
   }
 
