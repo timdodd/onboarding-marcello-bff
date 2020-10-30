@@ -6,7 +6,7 @@ import {ActivatedRoute, Router} from "@angular/router";
 import {UserModel} from "../model/user.model";
 import {PhoneModel} from "../model/phone.model";
 import { MatDialog, MatDialogConfig } from "@angular/material/dialog";
-import { VerifyDialogComponent } from '../verify-dialog/verify-dialog.component';
+import { ModalDialogComponent } from '../modal-dialog/modal-dialog.component';
 
 @Component({
   selector: 'app-user-detail',
@@ -275,7 +275,7 @@ export class UserDetailComponent implements OnInit {
       title: "Phone Number Verification",
       phone: phone
     };
-    const dialogRef = this.dialog.open(VerifyDialogComponent, dialogConfig);
+    const dialogRef = this.dialog.open(ModalDialogComponent, dialogConfig);
     dialogRef.afterClosed().subscribe((data) => {
       if(data) {
         const userId = this.formGroup.get("userId").value as string;

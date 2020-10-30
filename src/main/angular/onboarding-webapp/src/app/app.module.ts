@@ -11,13 +11,15 @@ import { VerifyDialogComponent } from './verify-dialog/verify-dialog.component';
 import { MatDialogModule } from "@angular/material/dialog";
 import { MatDialogConfig } from "@angular/material/dialog";
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { ModalDialogComponent } from './modal-dialog/modal-dialog.component';
 
 @NgModule({
   declarations: [
     AppComponent,
     UserListComponent,
     UserDetailComponent,
-    VerifyDialogComponent
+    VerifyDialogComponent,
+    ModalDialogComponent
   ],
   imports: [
     BrowserModule,
@@ -29,6 +31,6 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
   ],
   providers: [],
   bootstrap: [AppComponent],
-  entryComponents: [VerifyDialogComponent]
+  entryComponents: [ModalDialogComponent]
 })
 export class AppModule { }
