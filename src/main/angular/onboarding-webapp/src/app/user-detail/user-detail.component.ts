@@ -174,12 +174,17 @@ export class UserDetailComponent implements OnInit {
   }
 
   cancel() {
-    this.router.navigateByUrl("users");
+    if(this.formGroup.dirty){
+      //console.log("dirty");
+      this.openCancelUserChangesModal("");
+    } else {
+      this.router.navigateByUrl("users");
+    }
   }
 
   verifyPhone(index: number) {
     var phone = this.formGroup.get("phones").value[index] as PhoneModel;
-    this.openModal(phone);
+    this.openPhoneVerificationModal(phone);
   }
 
   deletePhone(phone: FormGroup) {
@@ -266,21 +271,41 @@ export class UserDetailComponent implements OnInit {
     });
   }
 
-  openModal(phone: PhoneModel) {
+  openPhoneVerificationModal(phone: PhoneModel) {
     const dialogConfig = new MatDialogConfig();
     dialogConfig.disableClose = true;
     dialogConfig.autoFocus = true;
     dialogConfig.data = {
       id: 1,
       title: "Phone Number Verification",
-      phone: phone
+      phone: phone,
+      cancel: null
     };
+    this.phoneService.sendVerification(phone).subscribe();
     const dialogRef = this.dialog.open(ModalDialogComponent, dialogConfig);
     dialogRef.afterClosed().subscribe((data) => {
       if(data) {
         const userId = this.formGroup.get("userId").value as string;
         this.formGroup.reset();
         this.loadUser(userId);
+      }
+    });
+  }
+
+  openCancelUserChangesModal(description: string) {
+    const dialogConfig = new MatDialogConfig();
+    dialogConfig.disableClose = true;
+    dialogConfig.autoFocus = true;
+    dialogConfig.data = {
+      id: 2,
+      title: "Cancel Changes",
+      phone: null,
+      cancel: description
+    };
+    const dialogRef = this.dialog.open(ModalDialogComponent, dialogConfig);
+    dialogRef.afterClosed().subscribe((data) => {
+      if(data) {
+        this.router.navigateByUrl("users");
       }
     });
   }

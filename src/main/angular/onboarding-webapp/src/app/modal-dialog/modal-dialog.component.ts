@@ -26,15 +26,10 @@ export class ModalDialogComponent implements OnInit {
 
                 this.phone = data.phone;
                 this.modalTitle = data.title;
-                //this.modalTitle = title;
-                //console.log(this.phone);
-                //console.log(this.formGroup);
   }
 
   ngOnInit(): void {
-    //this.formGroup.patchValue(this.phone);
-    //console.log(this.formGroup);
-    this.phoneService.sendVerification(this.phone).subscribe();
+    //this.phoneService.sendVerification(this.phone).subscribe();
   }
 
 
@@ -63,6 +58,20 @@ export class ModalDialogComponent implements OnInit {
 
   close() {
     this.dialogRef.close();
+  }
+
+  cancelAnyway() {
+    this.dialogRef.close(true);
+  }
+
+  selectModal(): boolean {
+    if(this.phone && this.modalTitle === "Phone Number Verification") {
+      return true;
+    } else if (!this.phone && this.modalTitle === "Cancel Changes") {
+      return true;
+    } else {
+      return false;
+    }
   }
 
 }
