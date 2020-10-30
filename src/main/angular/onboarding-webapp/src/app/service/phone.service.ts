@@ -38,13 +38,10 @@ export class PhoneService {
   }
 
   sendVerification(phone: PhoneModel): Observable<Response> {
-    //console.log("in sendVerification: ", phone);
     return this.http.post<Response>(`${BASE_URL}/${phone.userId}/phones/${phone.phoneId}/sendVerification`, null);
   }
 
   verify(phone: PhoneModel, phoneVerification: PhoneVerificationModel): Observable<Response> {
-    //console.log("in verify: ", phone);
-    //console.log("in verify: ", phoneVerification);
     return this.http.post<Response>(`${BASE_URL}/${phone.userId}/phones/${phone.phoneId}/verify`, phoneVerification);
   }
 

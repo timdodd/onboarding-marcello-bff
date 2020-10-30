@@ -49,9 +49,10 @@ public class PhoneController {
 
     @PutMapping("/{userId}/phones/makePrimary/{phoneId}")
     public PhoneDto makePrimary(@PathVariable("phoneId") UUID phoneId,
-                                @PathVariable("userId") UUID userId) {
+                                @PathVariable("userId") UUID userId,
+                                @RequestBody PhoneDto dto) {
 
-        return phoneClient.makePrimary(phoneClient.get(phoneId, userId));
+        return phoneClient.makePrimary(dto);
     }
 
     @GetMapping("/{userId}/phones")

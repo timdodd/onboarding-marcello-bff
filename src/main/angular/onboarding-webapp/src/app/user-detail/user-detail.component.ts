@@ -139,6 +139,7 @@ export class UserDetailComponent implements OnInit {
 
   save() {
     if(this.newPhoneNumberControl && this.newPhoneNumberControl.value != null) {
+      //console.log("addNewPhone() from save function");
       this.addNewPhone();
       if(this.newPhoneNumberControl.errors){
         return;
@@ -207,6 +208,7 @@ export class UserDetailComponent implements OnInit {
         this.phoneService.save(valueToSave, valueToSave.userId).subscribe((phone) => {
           this.newPhoneRowVisible = false;
           if(valueToSave.primaryPhone === true) {
+            //console.log("makePrimary call now");
             this.makePrimary(phone);
           }
           this.formGroup.get("newPhone").reset();
@@ -220,15 +222,25 @@ export class UserDetailComponent implements OnInit {
                 console.log("oh no something horrible went awry saving the phone");
             }
           });
-
       } else {
         //add to user phone list since user doesn't exist yet
         if(!this.newPhoneNumberErrors) {
-          this.phonesControl.push(this.addPhone(valueToSave));
-          this.newPhoneRowVisible = false;
-          this.formGroup.get("newPhone").reset();
+          if(!this.containsDuplicates(valueToSave.phoneNumber)){
+            this.phonesControl.push(this.addPhone(valueToSave));
+            this.newPhoneRowVisible = false;
+            this.formGroup.get("newPhone").reset();
+          }
         }
       }
+  }
+
+  containsDuplicates(phoneNumber: string): boolean{
+    for(var i = 0; i < this.phonesControl.value.length; i++){
+      if(this.phonesControl.value[i].phoneNumber === phoneNumber) {
+        return true;
+      }
+    }
+    return false;
   }
 
   cancelPhone() {
@@ -238,11 +250,12 @@ export class UserDetailComponent implements OnInit {
 
 
   makePrimary(phone: PhoneModel) {
+    //console.log("right before subscribe: ", phone)
     this.phoneService.makePrimary(phone).subscribe((newPrimaryPhone) => {
-
+      //console.log(newPrimaryPhone);
     }, httpError => {
       if(httpError.status === 400) {
-
+        //console.log(httpError.error)
       } else {
         console.log("oh no something horrible went awry making the phone primary");
       }
@@ -332,33 +345,41 @@ export class UserDetailComponent implements OnInit {
     }
   }
 
+  onKeyUp($event){
+    if($event.code !== "Backspace") {
+      this.formatPhoneNumber();
+    }
+  }
+
   //is there already an algorithm for this? is this too brute-force?
   formatPhoneNumber() {
     //for copy-paste a number
-    var checkNumber = this.newPhoneNumberControl.value;
-    if(checkNumber.length == 10 && !checkNumber.includes("(")
-          && !checkNumber.includes(")") && !checkNumber.includes("-")) {
-       var areaCode = <string>"(" + this.newPhoneNumberControl.value.substring(0,3) + ")";
-       var officeCode = <string>this.newPhoneNumberControl.value.substring(3, 6) + "-";
-       var digitStationCode = <string>this.newPhoneNumberControl.value.substring(6, 10);
-       this.newPhoneNumberControl.patchValue(areaCode + officeCode + digitStationCode)
-       return;
-    }
-    if(this.newPhoneNumberControl.value.length == 3) {
-      var areaCode = <string>"(" + this.newPhoneNumberControl.value.replace(/\D/g, '') + ")";
-      this.newPhoneNumberControl.patchValue(areaCode);
-    }
-    if(this.newPhoneNumberControl.value.length == 8 && this.newPhoneNumberControl.value.includes("(")
-         && this.newPhoneNumberControl.value.includes(")")) {
-      var areaCode = <string>this.newPhoneNumberControl.value.substring(0, 5);
-      var officeCode = <string>this.newPhoneNumberControl.value.substring(5, 9) + "-";
-      this.newPhoneNumberControl.patchValue(areaCode + officeCode);
-    }
-    if(this.newPhoneNumberControl.value.length == 13) {
-      var areaCode = <string>this.newPhoneNumberControl.value.substring(0, 5);
-      var officeCode = <string>this.newPhoneNumberControl.value.substring(5, 10);
-      var digitStationCode = <string>this.newPhoneNumberControl.value.substring(10, 13);
-      this.newPhoneNumberControl.patchValue(areaCode + officeCode + digitStationCode);
+    if(this.newPhoneNumberControl.value) {
+      var checkNumber = this.newPhoneNumberControl.value;
+      if(checkNumber.length == 10 && !checkNumber.includes("(")
+            && !checkNumber.includes(")") && !checkNumber.includes("-")) {
+         var areaCode = <string>"(" + this.newPhoneNumberControl.value.substring(0,3) + ")";
+         var officeCode = <string>this.newPhoneNumberControl.value.substring(3, 6) + "-";
+         var digitStationCode = <string>this.newPhoneNumberControl.value.substring(6, 10);
+         this.newPhoneNumberControl.patchValue(areaCode + officeCode + digitStationCode)
+         return;
+      }
+      if(this.newPhoneNumberControl.value.length == 3) {
+        var areaCode = <string>"(" + this.newPhoneNumberControl.value.replace(/\D/g, '') + ")";
+        this.newPhoneNumberControl.patchValue(areaCode);
+      }
+      if(this.newPhoneNumberControl.value.length == 8 && this.newPhoneNumberControl.value.includes("(")
+           && this.newPhoneNumberControl.value.includes(")")) {
+        var areaCode = <string>this.newPhoneNumberControl.value.substring(0, 5);
+        var officeCode = <string>this.newPhoneNumberControl.value.substring(5, 9) + "-";
+        this.newPhoneNumberControl.patchValue(areaCode + officeCode);
+      }
+      if(this.newPhoneNumberControl.value.length == 13) {
+        var areaCode = <string>this.newPhoneNumberControl.value.substring(0, 5);
+        var officeCode = <string>this.newPhoneNumberControl.value.substring(5, 10);
+        var digitStationCode = <string>this.newPhoneNumberControl.value.substring(10, 13);
+        this.newPhoneNumberControl.patchValue(areaCode + officeCode + digitStationCode);
+      }
     }
   }
 
@@ -372,6 +393,4 @@ export class UserDetailComponent implements OnInit {
           }
         }
   }
-
-
 }

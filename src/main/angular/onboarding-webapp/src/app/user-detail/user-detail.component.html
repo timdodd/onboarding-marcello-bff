@@ -70,7 +70,7 @@
           <tr [formGroup]="newPhoneFormGroup" *ngIf="newPhoneRowVisible">
             <td>
               <small for="phoneNumber">Enter 10-digit number:</small>
-              <input (input)="formatPhoneNumber()" type="tel" pattern="\([0-9]{3}\)[0-9]{3}[-][0-9]{4}" id='phoneNumber'
+              <input (keyup)="onKeyUp($event)" type="tel" pattern="\([0-9]{3}\)[0-9]{3}[-][0-9]{4}" id='phoneNumber'
                      formControlName="phoneNumber" class="form-control mt-2" placeholder="xxxxxxxxxx"
                      (change)="changeFormatError()">
               <small *ngIf="newPhoneNumberControl.errors" class="text-danger">
