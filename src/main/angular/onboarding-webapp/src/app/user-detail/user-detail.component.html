@@ -75,6 +75,7 @@
                      (change)="changeFormatError()">
               <small *ngIf="newPhoneNumberControl.errors" class="text-danger">
                 {{newPhoneErrorMessages}}</small>
+              <small *ngIf="addPhoneMessageVisible" class="text-danger">Add phone before saving.</small>
             </td>
             <td>
               <small class="" for="primaryNumber">Primary:</small><!--              Set as Primary-->

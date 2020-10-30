@@ -17,6 +17,7 @@ export class UserDetailComponent implements OnInit {
 
   formGroup = this.createFormGroup();
   newPhoneRowVisible = false;
+  addPhoneMessageVisible = false;
 
   constructor(private formBuilder: FormBuilder,
               private userService: UserService,
@@ -27,6 +28,7 @@ export class UserDetailComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    this.addPhoneMessageVisible = false;
     this.activatedRoute.paramMap.subscribe(params => {
       const userId = params.get("userId");
       if(params) {
@@ -138,12 +140,14 @@ export class UserDetailComponent implements OnInit {
   }
 
   save() {
+
     if(this.newPhoneNumberControl && this.newPhoneNumberControl.value != null) {
-      //console.log("addNewPhone() from save function");
-      this.addNewPhone();
-      if(this.newPhoneNumberControl.errors){
-        return;
-      }
+      this.addPhoneMessageVisible = true;
+      return
+      //this.addNewPhone();
+    }
+    if(this.newPhoneNumberControl.errors){
+          return;
     }
     const valueToSave = this.formGroup.value as UserModel;
     this.userService.save(valueToSave).subscribe((savedValue) => {
