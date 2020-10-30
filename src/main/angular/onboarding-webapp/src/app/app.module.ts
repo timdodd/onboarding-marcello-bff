@@ -7,7 +7,6 @@ import {UserListComponent} from './user-list/user-list.component';
 import {HttpClientModule} from "@angular/common/http";
 import {UserDetailComponent} from './user-detail/user-detail.component';
 import {ReactiveFormsModule} from "@angular/forms";
-import { VerifyDialogComponent } from './verify-dialog/verify-dialog.component';
 import { MatDialogModule } from "@angular/material/dialog";
 import { MatDialogConfig } from "@angular/material/dialog";
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
@@ -18,7 +17,6 @@ import { ModalDialogComponent } from './modal-dialog/modal-dialog.component';
     AppComponent,
     UserListComponent,
     UserDetailComponent,
-    VerifyDialogComponent,
     ModalDialogComponent
   ],
   imports: [
