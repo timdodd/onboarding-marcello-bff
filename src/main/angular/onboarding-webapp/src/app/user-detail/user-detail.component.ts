@@ -132,12 +132,20 @@ export class UserDetailComponent implements OnInit {
 
   private loadPhones(userId: string) {
     if(userId) {
+      this.formGroup.get("phones").reset();
       this.phoneService.findUserPhones(userId).subscribe(phones => {
-        for(let i = 0; i < phones.length; i++) {
-            if((<FormArray>this.formGroup.get("phones")).at(i) == null){
-               (<FormArray>this.formGroup.get("phones")).push(this.addPhone(phones[i]));
-            }
+
+        if((<FormArray>this.formGroup.get("phones")).at(0) == null) {
+          (<FormArray>this.formGroup.get("phones")).push(this.addPhone(phones.find(x => x.primaryPhone === true)));
         }
+
+        var i = (<FormArray>this.formGroup.get("phones")).value.length;
+        phones.filter(x => x.primaryPhone !== true).forEach(phone => {
+          if((<FormArray>this.formGroup.get("phones")).at(i) == null) {
+            (<FormArray>this.formGroup.get("phones")).push(this.addPhone(phone));
+            i++;
+          }
+        });
       });
     }
   }
@@ -154,6 +162,9 @@ export class UserDetailComponent implements OnInit {
     }
     const valueToSave = this.formGroup.value as UserModel;
     this.userService.save(valueToSave).subscribe((savedValue) => {
+      if(this.newPhonePrimaryControl.value === true) {
+        this.makePrimary(savedValue.phones.find(x => x.primaryPhone === true));
+      }
       this.router.navigateByUrl("users");
     }, httpError => {
       if (httpError.status === 400) {
