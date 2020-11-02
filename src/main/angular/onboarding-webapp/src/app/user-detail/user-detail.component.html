@@ -28,15 +28,11 @@
               <th>Primary</th>
               <th *ngIf="userExists() === true">Verified</th>
               <th></th>
-<!--              <th>-->
-<!--&lt;!&ndash;              <a class="btn btn-primary p-1 m-0 border-0" (click)="newPhone(null)">Add</a>&ndash;&gt;-->
-<!--              </th>-->
             </tr>
           </thead>
           <tbody formArrayName="phones">
           <tr [formGroup]="formGroup" *ngFor="let phone of phonesControl.controls; let i = index"
               formGroupName="{{i}}">
-<!--            <small *ngIf="phonesControl.errors" class="text-danger">{{phone.errors}}</small>-->
             <td>
               <input type="tel" pattern="\([0-9]{3}\)[0-9]{3}[-][0-9]{4}" [class.is-invalid]="phone.errors"
                      class="form-control" formControlName="phoneNumber">
@@ -44,7 +40,6 @@
             </td>
             <td>
               <div class="form-check mt-1">
-                <!--                ask about the radio buttons - may need to check that I'm loading forms correctly-->
                 <input type="radio" class="form-check-input" [value]="isPrimaryPhone(i)" name="primary"
                        [checked]="isPrimaryPhone(i) === true" (change)="changePrimary(i)">
               </div>
@@ -102,6 +97,5 @@
     <hr/>
     <button class="btn btn-primary" (click)="save()">Save</button>
     <button class="btn btn-link" (click)="cancel()">Cancel</button>
-<!--    <button class="btn btn-link float-right"  (click)='delete()'>Delete</button>-->
   </div>
 </div>

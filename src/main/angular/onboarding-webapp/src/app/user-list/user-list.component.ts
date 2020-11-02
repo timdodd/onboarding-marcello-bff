@@ -3,6 +3,9 @@ import {UserModel} from "../model/user.model";
 import {UserService} from "../service/user.service";
 import {PhoneService} from "../service/phone.service";
 import {Router} from "@angular/router";
+import { MatDialog, MatDialogConfig } from "@angular/material/dialog";
+import {UserConfirmDialogComponent} from '../user-confirm-dialog/user-confirm-dialog.component';
+
 
 @Component({
   selector: 'app-user-list',
@@ -13,7 +16,8 @@ export class UserListComponent implements OnInit {
 
   constructor(private userService: UserService,
               private phoneService: PhoneService,
-              private router: Router) { }
+              private router: Router,
+              private dialog: MatDialog) { }
 
   users: UserModel[] = [];
 
@@ -32,6 +36,10 @@ export class UserListComponent implements OnInit {
   }
 
   delete(user: UserModel): void {
+    this.openConfirmDeleteModal("This action cannot be undone. Continue?", "Confirm Delete", user)
+  }
+
+  deleteUser(user: UserModel) {
     var userId = user.userId;
     if(user.userId) {
       this.userService.delete(user.userId).subscribe((deleted) => {
@@ -47,4 +55,24 @@ export class UserListComponent implements OnInit {
       });
     }
   }
+
+    openConfirmDeleteModal(description: string, dialogTitle: string, user: UserModel) {
+      var choice: any;
+      const dialogConfig = new MatDialogConfig();
+      dialogConfig.disableClose = true;
+      dialogConfig.autoFocus = true;
+      dialogConfig.data = {
+        id: 1,
+        title: "Cancel Changes",
+        description: description
+      };
+      const dialogRef = this.dialog.open(UserConfirmDialogComponent, dialogConfig);
+      dialogRef.afterClosed().subscribe((data) => {
+        if(data) {
+          this.deleteUser(user);
+        }
+      });
+    }
+
+
 }

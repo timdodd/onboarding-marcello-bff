@@ -30,7 +30,7 @@ export class UserDetailComponent implements OnInit {
   }
 
   ngOnInit(): void {
-//     this.addPhoneMessageVisible = false;
+    //this.addPhoneMessageVisible = false;
     this.activatedRoute.paramMap.subscribe(params => {
       const userId = params.get("userId");
       if(params) {
@@ -179,8 +179,7 @@ export class UserDetailComponent implements OnInit {
   cancel() {
     if(this.formGroup.dirty || this.newPhoneNumberControl.value != null
         || this.phonesControl.value.length != this.initialPhonesLength){
-      //console.log("dirty");
-      this.openCancelUserChangesModal("");
+      this.openConfirmCancelChangesModal("Changes have been made to the form. Continue?", "Confirm cancel");
     } else {
       this.router.navigateByUrl("users");
     }
@@ -242,12 +241,9 @@ addNewPhone() {
 
 
   makePrimary(phone: PhoneModel) {
-    //console.log("right before subscribe: ", phone)
     this.phoneService.makePrimary(phone).subscribe((newPrimaryPhone) => {
-      //console.log(newPrimaryPhone);
     }, httpError => {
       if(httpError.status === 400) {
-        //console.log(httpError.error)
       } else {
         console.log("oh no something horrible went awry making the phone primary");
       }
@@ -275,14 +271,14 @@ addNewPhone() {
     });
   }
 
-  openCancelUserChangesModal(description: string) {
+  openConfirmCancelChangesModal(description: string, dialogTitle: string) {
     const dialogConfig = new MatDialogConfig();
     dialogConfig.disableClose = true;
     dialogConfig.autoFocus = true;
     dialogConfig.data = {
       id: 1,
-      title: "Cancel Changes",
-      description: "Changes have been made to the form. Cancel anyway?"
+      title: dialogTitle,
+      description: description
     };
     const dialogRef = this.dialog.open(UserConfirmDialogComponent, dialogConfig);
     dialogRef.afterClosed().subscribe((data) => {
