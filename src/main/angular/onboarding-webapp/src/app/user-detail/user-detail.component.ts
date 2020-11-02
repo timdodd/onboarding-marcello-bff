@@ -6,7 +6,8 @@ import {ActivatedRoute, Router} from "@angular/router";
 import {UserModel} from "../model/user.model";
 import {PhoneModel} from "../model/phone.model";
 import { MatDialog, MatDialogConfig } from "@angular/material/dialog";
-import { ModalDialogComponent } from '../modal-dialog/modal-dialog.component';
+import { VerifyPhoneDialogComponent } from '../verify-phone-dialog/verify-phone-dialog.component';
+import { UserConfirmDialogComponent } from '../user-confirm-dialog/user-confirm-dialog.component';
 
 @Component({
   selector: 'app-user-detail',
@@ -17,7 +18,8 @@ export class UserDetailComponent implements OnInit {
 
   formGroup = this.createFormGroup();
   newPhoneRowVisible = false;
-  addPhoneMessageVisible = false;
+  //addPhoneMessageVisible = false;
+  initialPhonesLength: number;
 
   constructor(private formBuilder: FormBuilder,
               private userService: UserService,
@@ -28,7 +30,7 @@ export class UserDetailComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.addPhoneMessageVisible = false;
+//     this.addPhoneMessageVisible = false;
     this.activatedRoute.paramMap.subscribe(params => {
       const userId = params.get("userId");
       if(params) {
@@ -124,6 +126,7 @@ export class UserDetailComponent implements OnInit {
     this.userService.get(userId).subscribe(user => {
       this.formGroup.patchValue(user);
       this.loadPhones(user.userId);
+      this.initialPhonesLength = user.phones ? user.phones.length : 0;
     });
   }
 
@@ -142,9 +145,9 @@ export class UserDetailComponent implements OnInit {
   save() {
 
     if(this.newPhoneNumberControl && this.newPhoneNumberControl.value != null) {
-      this.addPhoneMessageVisible = true;
-      return
-      //this.addNewPhone();
+      //this.addPhoneMessageVisible = true;
+      this.addNewPhone();
+      //return
     }
     if(this.newPhoneNumberControl.errors){
           return;
@@ -174,7 +177,8 @@ export class UserDetailComponent implements OnInit {
   }
 
   cancel() {
-    if(this.formGroup.dirty){
+    if(this.formGroup.dirty || this.newPhoneNumberControl.value != null
+        || this.phonesControl.value.length != this.initialPhonesLength){
       //console.log("dirty");
       this.openCancelUserChangesModal("");
     } else {
@@ -204,44 +208,23 @@ export class UserDetailComponent implements OnInit {
       }
   }
 
-  addNewPhone() {
-    var valueToSave = this.formGroup.get("newPhone").value as PhoneModel;
-    valueToSave.userId = this.formGroup.get("userId").value as string;
-    valueToSave.primaryPhone = this.formGroup.get("newPhone").value.primaryPhone === true ? true : false;
-
-    if(this.newPhoneNumberControl.errors) {
+addNewPhone() {
+ if(this.newPhoneNumberControl.errors) {
       return;
-    }
+ }
 
-    if(valueToSave.userId) {
-        this.phoneService.save(valueToSave, valueToSave.userId).subscribe((phone) => {
-          this.newPhoneRowVisible = false;
-          if(valueToSave.primaryPhone === true) {
-            //console.log("makePrimary call now");
-            this.makePrimary(phone);
-          }
-          this.formGroup.get("newPhone").reset();
-          this.loadPhones(this.formGroup.get("userId").value);
-          }, httpError => {
-            if(httpError.status === 400) {
-              Object.keys(httpError.error).forEach(key => {
-                this.newPhoneFormGroup.get(key).setErrors(httpError.error[key]);
-              })
-            } else {
-                console.log("oh no something horrible went awry saving the phone");
-            }
-          });
-      } else {
-        //add to user phone list since user doesn't exist yet
-        if(!this.newPhoneNumberErrors) {
-          if(!this.containsDuplicates(valueToSave.phoneNumber)){
-            this.phonesControl.push(this.addPhone(valueToSave));
-            this.newPhoneRowVisible = false;
-            this.formGroup.get("newPhone").reset();
-          }
-        }
-      }
+  var valueToAdd = this.formGroup.get("newPhone").value as PhoneModel;
+  valueToAdd.userId = this.formGroup.get("userId").value as string;
+  valueToAdd.primaryPhone = this.formGroup.get("newPhone").value.primaryPhone === true ? true : false;
+  if(!this.newPhoneNumberErrors) {
+    if(!this.containsDuplicates(valueToAdd.phoneNumber)){
+      this.phonesControl.push(this.addPhone(valueToAdd));
+      this.newPhoneRowVisible = false;
+      this.formGroup.get("newPhone").reset();
+    }
   }
+}
+
 
   containsDuplicates(phoneNumber: string): boolean{
     for(var i = 0; i < this.phonesControl.value.length; i++){
@@ -282,7 +265,7 @@ export class UserDetailComponent implements OnInit {
       cancel: null
     };
     this.phoneService.sendVerification(phone).subscribe();
-    const dialogRef = this.dialog.open(ModalDialogComponent, dialogConfig);
+    const dialogRef = this.dialog.open(VerifyPhoneDialogComponent, dialogConfig);
     dialogRef.afterClosed().subscribe((data) => {
       if(data) {
         const userId = this.formGroup.get("userId").value as string;
@@ -297,12 +280,11 @@ export class UserDetailComponent implements OnInit {
     dialogConfig.disableClose = true;
     dialogConfig.autoFocus = true;
     dialogConfig.data = {
-      id: 2,
+      id: 1,
       title: "Cancel Changes",
-      phone: null,
-      cancel: description
+      description: "Changes have been made to the form. Cancel anyway?"
     };
-    const dialogRef = this.dialog.open(ModalDialogComponent, dialogConfig);
+    const dialogRef = this.dialog.open(UserConfirmDialogComponent, dialogConfig);
     dialogRef.afterClosed().subscribe((data) => {
       if(data) {
         this.router.navigateByUrl("users");

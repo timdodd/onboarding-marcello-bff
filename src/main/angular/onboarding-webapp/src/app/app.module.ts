@@ -10,14 +10,16 @@ import {ReactiveFormsModule} from "@angular/forms";
 import { MatDialogModule } from "@angular/material/dialog";
 import { MatDialogConfig } from "@angular/material/dialog";
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import { ModalDialogComponent } from './modal-dialog/modal-dialog.component';
+import { UserConfirmDialogComponent } from './user-confirm-dialog/user-confirm-dialog.component';
+import { VerifyPhoneDialogComponent } from './verify-phone-dialog/verify-phone-dialog.component';
 
 @NgModule({
   declarations: [
     AppComponent,
     UserListComponent,
     UserDetailComponent,
-    ModalDialogComponent
+    UserConfirmDialogComponent,
+    VerifyPhoneDialogComponent
   ],
   imports: [
     BrowserModule,
@@ -29,6 +31,6 @@ import { ModalDialogComponent } from './modal-dialog/modal-dialog.component';
   ],
   providers: [],
   bootstrap: [AppComponent],
-  entryComponents: [ModalDialogComponent]
+  entryComponents: [UserConfirmDialogComponent, VerifyPhoneDialogComponent]
 })
 export class AppModule { }

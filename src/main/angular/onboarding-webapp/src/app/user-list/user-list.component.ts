@@ -32,17 +32,18 @@ export class UserListComponent implements OnInit {
   }
 
   delete(user: UserModel): void {
+    var userId = user.userId;
     if(user.userId) {
-      user.phones.forEach(phone => {
-        if(phone) {
-          this.phoneService.delete(phone).subscribe((deleted) => {
-            //console.log(phone);
-          })
-        }
-      });
       this.userService.delete(user.userId).subscribe((deleted) => {
         this.users = [];
         this.ngOnInit();
+        this.phoneService.findUserPhones(userId).subscribe((phone) => {
+          if(phone) {
+            phone.forEach(entity => this.phoneService.delete(entity));
+          }
+        }, httpError => {
+
+        });
       });
     }
   }

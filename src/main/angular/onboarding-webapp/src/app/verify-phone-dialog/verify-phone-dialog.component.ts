@@ -8,11 +8,11 @@ import {PhoneService} from "../service/phone.service";
 import {PhoneVerificationModel} from "../model/phoneVerification.model";
 
 @Component({
-  selector: 'app-modal-dialog',
-  templateUrl: './modal-dialog.component.html',
-  styleUrls: ['./modal-dialog.component.css']
+  selector: 'app-verify-phone-dialog',
+  templateUrl: './verify-phone-dialog.component.html',
+  styleUrls: ['./verify-phone-dialog.component.css']
 })
-export class ModalDialogComponent implements OnInit {
+export class VerifyPhoneDialogComponent implements OnInit {
 
   modalTitle: string;
   formGroup = this.createFormGroup();
@@ -20,7 +20,7 @@ export class ModalDialogComponent implements OnInit {
   phoneVerification: PhoneVerificationModel;
 
   constructor(private formBuilder: FormBuilder,
-              private dialogRef: MatDialogRef<ModalDialogComponent>,
+              private dialogRef: MatDialogRef<VerifyPhoneDialogComponent>,
               private phoneService: PhoneService,
               @Inject(MAT_DIALOG_DATA) data) {
 
@@ -58,20 +58,6 @@ export class ModalDialogComponent implements OnInit {
 
   close() {
     this.dialogRef.close();
-  }
-
-  cancelAnyway() {
-    this.dialogRef.close(true);
-  }
-
-  selectModal(): boolean {
-    if(this.phone && this.modalTitle === "Phone Number Verification") {
-      return true;
-    } else if (!this.phone && this.modalTitle === "Cancel Changes") {
-      return true;
-    } else {
-      return false;
-    }
   }
 
 }
