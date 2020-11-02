@@ -187,11 +187,13 @@ export class UserDetailComponent implements OnInit {
 
   verifyPhone(index: number) {
     var phone = this.formGroup.get("phones").value[index] as PhoneModel;
-    this.openPhoneVerificationModal(phone);
+    if(phone && phone.phoneId) {
+      this.openPhoneVerificationModal(phone);
+    }
   }
 
   deletePhone(phone: FormGroup) {
-    if(phone) {
+    if(phone && phone.get("phoneId").value) {
       var valueToDelete = phone.value as PhoneModel;
       this.phoneService.delete(valueToDelete).subscribe((deleted) => {
         this.formGroup = this.createFormGroup();
@@ -299,6 +301,14 @@ addNewPhone() {
      }
      return false;
    }
+
+phoneIdExists(index: number) {
+  var phone = this.formGroup.get("phones").value[index] as PhoneModel;
+  if(phone.phoneId) {
+    return true;
+  }
+  return false;
+}
 
  checkVerified(index: number) {
    var phone = this.formGroup.get("phones").value[index] as PhoneModel;

@@ -63,7 +63,7 @@ export class UserListComponent implements OnInit {
       dialogConfig.autoFocus = true;
       dialogConfig.data = {
         id: 1,
-        title: "Cancel Changes",
+        title: dialogTitle,
         description: description
       };
       const dialogRef = this.dialog.open(UserConfirmDialogComponent, dialogConfig);

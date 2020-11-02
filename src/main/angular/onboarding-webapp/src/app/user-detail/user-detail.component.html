@@ -49,8 +49,8 @@
                 <input type="checkbox" class="form-check-input" id="verified${i}"
                        formControlName="verified" disabled="primaryPhoneCheckboxDisabled">
               </div>
-              <button type="button" class="btn btn-sm btn-link pt-0 mt-0 border-0"
-                      (click)="verifyPhone(i)" *ngIf="checkVerified(i) === false">Verify</button>
+              <button  type="button" class="btn btn-sm btn-link pt-0 mt-0 border-0"
+                      (click)="verifyPhone(i)" *ngIf="checkVerified(i) === false && phoneIdExists(i)">Verify</button>
             </td>
             <td *ngIf="userExists() === true">
               <button type="button" class="btn btn-link btn-sm pt-0 mt-0 border-0" tooltip="Delete phone."
