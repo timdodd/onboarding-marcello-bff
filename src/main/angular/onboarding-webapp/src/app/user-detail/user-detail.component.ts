@@ -132,38 +132,56 @@ export class UserDetailComponent implements OnInit {
 
   private loadPhones(userId: string) {
     if(userId) {
-      this.formGroup.get("phones").reset();
+      while(this.phonesControl.length > 0) {
+        this.phonesControl.removeAt(0);
+      }
       this.phoneService.findUserPhones(userId).subscribe(phones => {
-
-        if((<FormArray>this.formGroup.get("phones")).at(0) == null) {
-          (<FormArray>this.formGroup.get("phones")).push(this.addPhone(phones.find(x => x.primaryPhone === true)));
-        }
-
-        var i = (<FormArray>this.formGroup.get("phones")).value.length;
-        phones.filter(x => x.primaryPhone !== true).forEach(phone => {
-          if((<FormArray>this.formGroup.get("phones")).at(i) == null) {
-            (<FormArray>this.formGroup.get("phones")).push(this.addPhone(phone));
-            i++;
+        if(phones.length > 0){
+          if((<FormArray>this.formGroup.get("phones")).at(0) == null) {
+            (<FormArray>this.formGroup.get("phones")).push(this.addPhone(phones.find(x => x.primaryPhone === true)));
           }
-        });
+          var i = (<FormArray>this.formGroup.get("phones")).value.length;
+          phones.filter(x => x.primaryPhone !== true).forEach(phone => {
+            if((<FormArray>this.formGroup.get("phones")).at(i) == null) {
+              (<FormArray>this.formGroup.get("phones")).push(this.addPhone(phone));
+              i++;
+            }
+          });
+        }
+      }, httpError => {
+
       });
     }
   }
 
   save() {
 
+    var toMakePrimary: string;
     if(this.newPhoneNumberControl && this.newPhoneNumberControl.value != null) {
-      //this.addPhoneMessageVisible = true;
+      if(this.newPhonePrimaryControl && this.formGroup.get("newPhone").value.primaryPhone === true) {
+        toMakePrimary = this.newPhoneNumberControl.value;
+      }
       this.addNewPhone();
-      //return
+    } else {
+      var newPrimaryPhonesLength = this.phonesControl.value
+            .filter(x => x.phoneId === null && x.primaryPhone === true)
+            .length;
+      if(newPrimaryPhonesLength > 0) {
+        toMakePrimary = this.phonesControl.value
+            .filter(x => x.phoneId === null && x.primaryPhone === true)[newPrimaryPhonesLength - 1]
+            .phoneNumber;
+      }
     }
-    if(this.newPhoneNumberControl.errors){
-          return;
+
+    if(toMakePrimary) {
+      var index = this.phonesControl.value.findIndex(x => x.phoneNumber === toMakePrimary);
+      this.changePrimary(index);
     }
+
     const valueToSave = this.formGroup.value as UserModel;
     this.userService.save(valueToSave).subscribe((savedValue) => {
-      if(this.newPhonePrimaryControl.value === true) {
-        this.makePrimary(savedValue.phones.find(x => x.primaryPhone === true));
+      if(toMakePrimary) {
+        this.makePrimary(savedValue.phones.find(x => x.phoneNumber === toMakePrimary));
       }
       this.router.navigateByUrl("users");
     }, httpError => {
@@ -207,7 +225,7 @@ export class UserDetailComponent implements OnInit {
     if(phone && phone.get("phoneId").value) {
       var valueToDelete = phone.value as PhoneModel;
       this.phoneService.delete(valueToDelete).subscribe((deleted) => {
-        this.formGroup = this.createFormGroup();
+        //this.formGroup = this.createFormGroup();
         this.loadUser(valueToDelete.userId);
         }, httpError => {
           if(httpError.status === 400) {
@@ -230,6 +248,7 @@ addNewPhone() {
   valueToAdd.primaryPhone = this.formGroup.get("newPhone").value.primaryPhone === true ? true : false;
   if(!this.newPhoneNumberErrors) {
     if(!this.containsDuplicates(valueToAdd.phoneNumber)){
+
       this.phonesControl.push(this.addPhone(valueToAdd));
       this.newPhoneRowVisible = false;
       this.formGroup.get("newPhone").reset();
@@ -365,6 +384,9 @@ phoneIdExists(index: number) {
 
   primaryCheckboxChange() {
     this.formGroup.get("newPhone").value.primaryPhone = !this.formGroup.get("newPhone").value.primaryPhone;
+    if(!this.formGroup.get("newPhone").value.primaryPhone) {
+      this.formGroup.get("newPhone").value.primaryPhone = false;
+    }
   }
 
   changeFormatError() {
@@ -412,13 +434,11 @@ phoneIdExists(index: number) {
   }
 
   changePrimary(index: number) {
-    for(var i = 0; i < this.phonesControl.value.length; i++){
-          var phone = this.phonesControl.value[i] as PhoneModel;
-          if(i === index){
-            phone.primaryPhone = true;
-          } else {
-            phone.primaryPhone = false;
-          }
-        }
+    this.phonesControl.value.forEach(phone => {
+      phone.primaryPhone = false;
+    })
+    if(index >= 0) {
+      this.phonesControl.at(index).value.primaryPhone = true;
+    }
   }
 }

@@ -41,7 +41,7 @@
             <td>
               <div class="form-check mt-1">
                 <input type="radio" class="form-check-input" [value]="isPrimaryPhone(i)" name="primary"
-                       [checked]="isPrimaryPhone(i) === true" (change)="changePrimary(i)">
+                       [checked]="isPrimaryPhone(i) === true" (click)="changePrimary(i)">
               </div>
             </td>
             <td *ngIf="userExists() === true">
