@@ -18,7 +18,6 @@ export class UserDetailComponent implements OnInit {
 
   formGroup = this.createFormGroup();
   newPhoneRowVisible = false;
-  //addPhoneMessageVisible = false;
   initialPhonesLength: number;
 
   constructor(private formBuilder: FormBuilder,
@@ -30,7 +29,6 @@ export class UserDetailComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    //this.addPhoneMessageVisible = false;
     this.activatedRoute.paramMap.subscribe(params => {
       const userId = params.get("userId");
       if(params) {
@@ -155,7 +153,6 @@ export class UserDetailComponent implements OnInit {
   }
 
   save() {
-
     var toMakePrimary: string;
     if(this.newPhoneNumberControl && this.newPhoneNumberControl.value != null) {
       if(this.newPhonePrimaryControl && this.formGroup.get("newPhone").value.primaryPhone === true) {
@@ -172,12 +169,11 @@ export class UserDetailComponent implements OnInit {
             .phoneNumber;
       }
     }
-
     if(toMakePrimary) {
       var index = this.phonesControl.value.findIndex(x => x.phoneNumber === toMakePrimary);
       this.changePrimary(index);
     }
-
+    //save the user
     const valueToSave = this.formGroup.value as UserModel;
     this.userService.save(valueToSave).subscribe((savedValue) => {
       if(toMakePrimary) {
@@ -225,7 +221,6 @@ export class UserDetailComponent implements OnInit {
     if(phone && phone.get("phoneId").value) {
       var valueToDelete = phone.value as PhoneModel;
       this.phoneService.delete(valueToDelete).subscribe((deleted) => {
-        //this.formGroup = this.createFormGroup();
         this.loadUser(valueToDelete.userId);
         }, httpError => {
           if(httpError.status === 400) {
@@ -234,25 +229,24 @@ export class UserDetailComponent implements OnInit {
             console.log("oh no something horrible went awry deleting phone");
           }
 
-          });
-      }
+      });
+    } else {
+      this.phonesControl.removeAt(this.phonesControl.value.findIndex(x => x.phoneNumber === phone.get("phoneNumber").value));
+      this.loadUser(this.formGroup.get("userId").value);
+    }
   }
 
 addNewPhone() {
- if(this.newPhoneNumberControl.errors) {
-      return;
- }
-
+//  if(this.newPhoneNumberControl.errors) {
+//       return;
+//  }
   var valueToAdd = this.formGroup.get("newPhone").value as PhoneModel;
   valueToAdd.userId = this.formGroup.get("userId").value as string;
   valueToAdd.primaryPhone = this.formGroup.get("newPhone").value.primaryPhone === true ? true : false;
   if(!this.newPhoneNumberErrors) {
-    if(!this.containsDuplicates(valueToAdd.phoneNumber)){
-
-      this.phonesControl.push(this.addPhone(valueToAdd));
-      this.newPhoneRowVisible = false;
-      this.formGroup.get("newPhone").reset();
-    }
+    this.phonesControl.push(this.addPhone(valueToAdd));
+    this.newPhoneRowVisible = false;
+    this.formGroup.get("newPhone").reset();
   }
 }
 
@@ -270,7 +264,6 @@ addNewPhone() {
     this.newPhoneRowVisible = false;
     this.formGroup.get("newPhone").reset();
   }
-
 
   makePrimary(phone: PhoneModel) {
     this.phoneService.makePrimary(phone).subscribe((newPrimaryPhone) => {
@@ -332,24 +325,24 @@ addNewPhone() {
      return false;
    }
 
-phoneIdExists(index: number) {
-  var phone = this.formGroup.get("phones").value[index] as PhoneModel;
-  if(phone.phoneId) {
-    return true;
+  phoneIdExists(index: number) {
+    var phone = this.formGroup.get("phones").value[index] as PhoneModel;
+    if(phone.phoneId) {
+      return true;
+    }
+    return false;
   }
-  return false;
-}
 
- checkVerified(index: number) {
-   var phone = this.formGroup.get("phones").value[index] as PhoneModel;
-   if(phone){
-     if(phone.verified === true){
-       return true;
-     } else {
-       return false;
-     }
-   }
- }
+  checkVerified(index: number) {
+    var phone = this.formGroup.get("phones").value[index] as PhoneModel;
+    if(phone){
+      if(phone.verified === true){
+        return true;
+      } else {
+        return false;
+      }
+    }
+  }
 
   isPrimaryPhone(index: number) {
   const phoneToCheck = this.phonesControl.at(index).value.primaryPhone;
@@ -390,48 +383,48 @@ phoneIdExists(index: number) {
   }
 
   changeFormatError() {
-    if(this.newPhoneNumberControl. errors && this.newPhoneNumberControl.errors.pattern) {
+    if(this.newPhoneNumberControl.errors && this.newPhoneNumberControl.errors.pattern) {
       this.newPhoneNumberControl.errors.pattern.requiredPattern = "Incorrect format. Enter 10 digits.\n Auto formats to: (XXX)123-4567";
     }
   }
 
-  onKeyUp($event){
+  onKeyUp($event, control: FormControl){
     if($event.code !== "Backspace") {
-      this.formatPhoneNumber();
+      this.formatPhoneNumber(control);
     }
   }
 
-  //is there already an algorithm for this? is this too brute-force?
-  formatPhoneNumber() {
-    //for copy-paste a number
-    if(this.newPhoneNumberControl.value) {
-      var checkNumber = this.newPhoneNumberControl.value;
-      if(checkNumber.length == 10 && !checkNumber.includes("(")
-            && !checkNumber.includes(")") && !checkNumber.includes("-")) {
-         var areaCode = <string>"(" + this.newPhoneNumberControl.value.substring(0,3) + ")";
-         var officeCode = <string>this.newPhoneNumberControl.value.substring(3, 6) + "-";
-         var digitStationCode = <string>this.newPhoneNumberControl.value.substring(6, 10);
-         this.newPhoneNumberControl.patchValue(areaCode + officeCode + digitStationCode)
-         return;
-      }
-      if(this.newPhoneNumberControl.value.length == 3) {
-        var areaCode = <string>"(" + this.newPhoneNumberControl.value.replace(/\D/g, '') + ")";
-        this.newPhoneNumberControl.patchValue(areaCode);
-      }
-      if(this.newPhoneNumberControl.value.length == 8 && this.newPhoneNumberControl.value.includes("(")
-           && this.newPhoneNumberControl.value.includes(")")) {
-        var areaCode = <string>this.newPhoneNumberControl.value.substring(0, 5);
-        var officeCode = <string>this.newPhoneNumberControl.value.substring(5, 9) + "-";
-        this.newPhoneNumberControl.patchValue(areaCode + officeCode);
-      }
-      if(this.newPhoneNumberControl.value.length == 13) {
-        var areaCode = <string>this.newPhoneNumberControl.value.substring(0, 5);
-        var officeCode = <string>this.newPhoneNumberControl.value.substring(5, 10);
-        var digitStationCode = <string>this.newPhoneNumberControl.value.substring(10, 13);
-        this.newPhoneNumberControl.patchValue(areaCode + officeCode + digitStationCode);
+    //is there already an algorithm for this? is this too brute-force?
+    formatPhoneNumber(control: FormControl) {
+      //for copy-pasting a number
+      if(control.value) {
+        var checkNumber = control.value;
+        if(checkNumber.length == 10 && !checkNumber.includes("(")
+              && !checkNumber.includes(")") && !checkNumber.includes("-")) {
+           var areaCode = <string>"(" + control.value.substring(0,3) + ")";
+           var officeCode = <string>control.value.substring(3, 6) + "-";
+           var digitStationCode = <string>control.value.substring(6, 10);
+           control.patchValue(areaCode + officeCode + digitStationCode)
+           return;
+        }
+        if(control.value.length == 3) {
+          var areaCode = <string>"(" + control.value.replace(/\D/g, '') + ")";
+          control.patchValue(areaCode);
+        }
+        if(control.value.length == 8 && control.value.includes("(")
+             && control.value.includes(")")) {
+          var areaCode = <string>control.value.substring(0, 5);
+          var officeCode = <string>control.value.substring(5, 9) + "-";
+          control.patchValue(areaCode + officeCode);
+        }
+        if(control.value.length == 13) {
+          var areaCode = <string>control.value.substring(0, 5);
+          var officeCode = <string>control.value.substring(5, 10);
+          var digitStationCode = <string>control.value.substring(10, 13);
+          control.patchValue(areaCode + officeCode + digitStationCode);
+        }
       }
     }
-  }
 
   changePrimary(index: number) {
     this.phonesControl.value.forEach(phone => {

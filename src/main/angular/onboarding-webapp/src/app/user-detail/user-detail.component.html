@@ -35,7 +35,8 @@
               formGroupName="{{i}}">
             <td>
               <input type="tel" pattern="\([0-9]{3}\)[0-9]{3}[-][0-9]{4}" [class.is-invalid]="phone.errors"
-                     class="form-control" formControlName="phoneNumber">
+                     class="form-control" formControlName="phoneNumber"
+                     (keyup)="onKeyUp($event, phone.controls.phoneNumber)">
               <small *ngIf="phone.errors" class="text-danger">{{phone.errors}}</small>
             </td>
             <td>
@@ -65,7 +66,7 @@
           <tr [formGroup]="newPhoneFormGroup" *ngIf="newPhoneRowVisible">
             <td>
               <small for="phoneNumber">Enter 10-digit number:</small>
-              <input (keyup)="onKeyUp($event)" type="tel" pattern="\([0-9]{3}\)[0-9]{3}[-][0-9]{4}" id='phoneNumber'
+              <input (keyup)="onKeyUp($event, newPhoneNumberControl)" type="tel" pattern="\([0-9]{3}\)[0-9]{3}[-][0-9]{4}" id='phoneNumber'
                      formControlName="phoneNumber" class="form-control mt-2" placeholder="xxxxxxxxxx"
                      (change)="changeFormatError()">
               <small *ngIf="newPhoneNumberControl.errors" class="text-danger">
