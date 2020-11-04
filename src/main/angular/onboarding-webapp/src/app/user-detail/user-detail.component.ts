@@ -105,13 +105,21 @@ export class UserDetailComponent implements OnInit {
     return this.newPhoneNumberControl.errors
   }
 
-  get newPhoneErrorMessages() : any {
-    if(this.newPhoneNumberControl.errors) {
-      if(this.newPhoneNumberControl.errors.pattern) {
-        this.changeFormatError();
-        return this.newPhoneNumberControl.errors.pattern.requiredPattern;
+  get newPhoneErrors(): any {
+    return this.phoneErrorMessage(this.newPhoneNumberControl);
+  }
+
+  phoneErrors(control: FormControl): any {
+    this.phoneErrorMessage(control);
+  }
+
+  phoneErrorMessage(control: FormControl) : any {
+    if(control && control.errors) {
+      if(control.errors.pattern) {
+        this.changeFormatError(control);
+        return control.errors.pattern.requiredPattern;
       }
-      return this.newPhoneNumberControl.errors;
+      return control.errors;
     }
     return null;
   }
@@ -153,6 +161,20 @@ export class UserDetailComponent implements OnInit {
   }
 
   save() {
+    //check for errors
+    for(let i = 0; i < this.phonesControl.value.length; i++) {
+      var groupToCheck = this.phonesControl.at(i) as FormGroup;
+      if(groupToCheck.controls.phoneNumber.errors) {
+        if(groupToCheck.controls.phoneNumber.errors.pattern) {
+          return;
+        }
+        return;
+      }
+    }
+    if(this.newPhoneNumberControl && this.newPhoneNumberControl.errors) {
+      return;
+    }
+    //get which phone to make primary
     var toMakePrimary: string;
     if(this.newPhoneNumberControl && this.newPhoneNumberControl.value != null) {
       if(this.newPhonePrimaryControl && this.formGroup.get("newPhone").value.primaryPhone === true) {
@@ -237,9 +259,9 @@ export class UserDetailComponent implements OnInit {
   }
 
 addNewPhone() {
-//  if(this.newPhoneNumberControl.errors) {
-//       return;
-//  }
+ if(this.newPhoneNumberControl.errors) {
+      return;
+ }
   var valueToAdd = this.formGroup.get("newPhone").value as PhoneModel;
   valueToAdd.userId = this.formGroup.get("userId").value as string;
   valueToAdd.primaryPhone = this.formGroup.get("newPhone").value.primaryPhone === true ? true : false;
@@ -382,9 +404,9 @@ addNewPhone() {
     }
   }
 
-  changeFormatError() {
-    if(this.newPhoneNumberControl.errors && this.newPhoneNumberControl.errors.pattern) {
-      this.newPhoneNumberControl.errors.pattern.requiredPattern = "Incorrect format. Enter 10 digits.\n Auto formats to: (XXX)123-4567";
+  changeFormatError(control: FormControl) {
+    if(control && control.errors && control.errors.pattern) {
+      control.errors.pattern.requiredPattern = "Incorrect format. Enter 10 digits.\n Auto formats to: (XXX)123-4567";
     }
   }
 

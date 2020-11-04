@@ -36,7 +36,10 @@
             <td>
               <input type="tel" pattern="\([0-9]{3}\)[0-9]{3}[-][0-9]{4}" [class.is-invalid]="phone.errors"
                      class="form-control" formControlName="phoneNumber"
-                     (keyup)="onKeyUp($event, phone.controls.phoneNumber)">
+                     (keyup)="onKeyUp($event, phone.controls.phoneNumber)" (input)="phoneErrors(phone.controls.phoneNumber)"
+                     (change)="phoneErrors(phone.controls.phoneNumber)">
+              <small *ngIf="phone.controls.phoneNumber.errors && phone.controls.phoneNumber.errors.pattern" class="text-danger">
+                  {{phone.controls.phoneNumber.errors.pattern.requiredPattern}}</small>
               <small *ngIf="phone.errors" class="text-danger">{{phone.errors}}</small>
             </td>
             <td>
@@ -67,10 +70,9 @@
             <td>
               <small for="phoneNumber">Enter 10-digit number:</small>
               <input (keyup)="onKeyUp($event, newPhoneNumberControl)" type="tel" pattern="\([0-9]{3}\)[0-9]{3}[-][0-9]{4}" id='phoneNumber'
-                     formControlName="phoneNumber" class="form-control mt-2" placeholder="xxxxxxxxxx"
-                     (change)="changeFormatError()">
+                     formControlName="phoneNumber" class="form-control mt-2" placeholder="xxxxxxxxxx">
               <small *ngIf="newPhoneNumberControl.errors" class="text-danger">
-                {{newPhoneErrorMessages}}</small>
+                {{newPhoneErrors}}</small>
 <!--              <small *ngIf="addPhoneMessageVisible" class="text-danger">Add phone before saving.</small>-->
             </td>
             <td>
