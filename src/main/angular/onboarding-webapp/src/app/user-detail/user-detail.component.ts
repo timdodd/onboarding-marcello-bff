@@ -57,7 +57,8 @@ export class UserDetailComponent implements OnInit {
     });
   }
 
-  private addPhone(phone: PhoneModel): FormGroup {
+  //createPhoneFormGroup
+  private createPhoneFormGroup(phone: PhoneModel): FormGroup {
     return this.formBuilder.group({
       phoneId: phone.phoneId,
       userId: phone.userId,
@@ -125,6 +126,9 @@ export class UserDetailComponent implements OnInit {
   }
 
 
+  private get phonesFormArray(): FormArray {
+    return this.formGroup.get("phones") as FormArray;
+  }
 // CRUD and Use Case methods
 //---------------------------
 
@@ -137,28 +141,38 @@ export class UserDetailComponent implements OnInit {
   }
 
   private loadPhones(userId: string) {
-    if(userId) {
-      while(this.phonesControl.length > 0) {
-        this.phonesControl.removeAt(0);
-      }
       this.phoneService.findUserPhones(userId).subscribe(phones => {
-        if(phones.length > 0){
-          if((<FormArray>this.formGroup.get("phones")).at(0) == null) {
-            (<FormArray>this.formGroup.get("phones")).push(this.addPhone(phones.find(x => x.primaryPhone === true)));
-          }
-          var i = (<FormArray>this.formGroup.get("phones")).value.length;
-          phones.filter(x => x.primaryPhone !== true).forEach(phone => {
-            if((<FormArray>this.formGroup.get("phones")).at(i) == null) {
-              (<FormArray>this.formGroup.get("phones")).push(this.addPhone(phone));
-              i++;
-            }
-          });
-        }
-      }, httpError => {
-
+        phones.forEach(phone => {
+          const phoneFormGroup = this.createPhoneFormGroup(phone);
+          this.phonesFormArray.controls.push(phoneFormGroup);
+        });
       });
-    }
   }
+
+
+  // private loadPhones(userId: string) {
+  //   if(userId) {
+  //     while(this.phonesControl.length > 0) {
+  //       this.phonesControl.removeAt(0);
+  //     }
+  //     this.phoneService.findUserPhones(userId).subscribe(phones => {
+  //       if(phones.length > 0){
+  //         if((<FormArray>this.formGroup.get("phones")).at(0) == null) {
+  //           (<FormArray>this.formGroup.get("phones")).push(this.addPhone(phones.find(x => x.primaryPhone === true)));
+  //         }
+  //         var i = (<FormArray>this.formGroup.get("phones")).value.length;
+  //         phones.filter(x => x.primaryPhone !== true).forEach(phone => {
+  //           if((<FormArray>this.formGroup.get("phones")).at(i) == null) {
+  //             (<FormArray>this.formGroup.get("phones")).push(this.addPhone(phone));
+  //             i++;
+  //           }
+  //         });
+  //       }
+  //     }, httpError => {
+  //
+  //     });
+  //   }
+  // }
 
   save() {
     //check for errors
@@ -266,7 +280,7 @@ addNewPhone() {
   valueToAdd.userId = this.formGroup.get("userId").value as string;
   valueToAdd.primaryPhone = this.formGroup.get("newPhone").value.primaryPhone === true ? true : false;
   if(!this.newPhoneNumberErrors) {
-    this.phonesControl.push(this.addPhone(valueToAdd));
+    this.phonesControl.push(this.createPhoneFormGroup(valueToAdd));
     this.newPhoneRowVisible = false;
     this.formGroup.get("newPhone").reset();
   }

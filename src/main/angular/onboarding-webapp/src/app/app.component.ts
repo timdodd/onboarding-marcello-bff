@@ -1,5 +1,6 @@
 import { ViewEncapsulation } from '@angular/core';
 import { Component } from '@angular/core';
+import {FormControl} from "@angular/forms";
 
 @Component({
   selector: 'app-root',
@@ -8,4 +9,6 @@ import { Component } from '@angular/core';
 })
 export class AppComponent {
   title = 'onboarding-webapp';
+
+  formControl = new FormControl();
 }
