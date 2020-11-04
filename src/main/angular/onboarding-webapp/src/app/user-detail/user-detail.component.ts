@@ -427,6 +427,7 @@ addNewPhone() {
            var officeCode = <string>control.value.substring(3, 6) + "-";
            var digitStationCode = <string>control.value.substring(6, 10);
            control.patchValue(areaCode + officeCode + digitStationCode)
+           this.changeFormatError(control);
            return;
         }
         if(control.value.length == 3) {
@@ -445,6 +446,7 @@ addNewPhone() {
           var digitStationCode = <string>control.value.substring(10, 13);
           control.patchValue(areaCode + officeCode + digitStationCode);
         }
+        this.changeFormatError(control);
       }
     }
 
