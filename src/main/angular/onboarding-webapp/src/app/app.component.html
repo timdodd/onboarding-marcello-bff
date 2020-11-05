@@ -1,6 +1,7 @@
 <div class="container">
-  <app-postal-code [formControl]="formControl"></app-postal-code>
-
-  {{formControl.value}}
+<!--  <app-postal-code [formControl]="postalCodeFormControl"></app-postal-code>-->
+<!--  {{postalCodeFormControl.value}}-->
+  <app-phone-number [formControl]="phoneFormControl" (input)="testFormControl()"></app-phone-number>
+  {{phoneFormControl.value}}
   <router-outlet></router-outlet>
 </div>

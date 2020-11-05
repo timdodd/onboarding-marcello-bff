@@ -13,6 +13,7 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { UserConfirmDialogComponent } from './user-confirm-dialog/user-confirm-dialog.component';
 import { VerifyPhoneDialogComponent } from './verify-phone-dialog/verify-phone-dialog.component';
 import { PostalCodeComponent } from './postal-code/postal-code.component';
+import { PhoneNumberComponent } from './phone-number/phone-number.component';
 
 @NgModule({
   declarations: [
@@ -21,7 +22,8 @@ import { PostalCodeComponent } from './postal-code/postal-code.component';
     UserDetailComponent,
     UserConfirmDialogComponent,
     VerifyPhoneDialogComponent,
-    PostalCodeComponent
+    PostalCodeComponent,
+    PhoneNumberComponent
   ],
   imports: [
     BrowserModule,

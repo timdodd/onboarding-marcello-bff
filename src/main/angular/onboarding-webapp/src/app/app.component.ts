@@ -10,5 +10,9 @@ import {FormControl} from "@angular/forms";
 export class AppComponent {
   title = 'onboarding-webapp';
 
-  formControl = new FormControl();
+  phoneFormControl = new FormControl();
+
+  testFormControl() {
+    //console.log(this.phoneFormControl);
+  }
 }

@@ -430,7 +430,7 @@ addNewPhone() {
     }
   }
 
-    //is there already an algorithm for this? is this too brute-force?
+    //TO REMOVE
     formatPhoneNumber(control: FormControl) {
       //for copy-pasting a number
       if(control.value) {
