@@ -17,8 +17,6 @@ import { UserConfirmDialogComponent } from '../user-confirm-dialog/user-confirm-
 export class UserDetailComponent implements OnInit {
 
   formGroup = this.createFormGroup();
-  newPhoneRowVisible = false;
-  initialPhonesLength: number;
 
   constructor(private formBuilder: FormBuilder,
               private userService: UserService,
@@ -34,7 +32,6 @@ export class UserDetailComponent implements OnInit {
       if(params) {
         this.loadUser(userId);
       }
-      if(userId) {} else { this.showPhoneForm(); }
     })
   }
 
@@ -45,28 +42,19 @@ export class UserDetailComponent implements OnInit {
       lastName: null,
       username: null,
       phones: this.formBuilder.array([]),
-      newPhone: this.formBuilder.group({
-        phoneId: null,
-        userId: null,
-        phoneNumber: null,
-        primaryPhone: null,
-        verified: null,
-        verificationCode: null,
-        time: null,
-      })
     });
   }
 
   //createPhoneFormGroup
   private createPhoneFormGroup(phone: PhoneModel): FormGroup {
     return this.formBuilder.group({
-      phoneId: phone.phoneId,
-      userId: phone.userId,
-      phoneNumber: phone.phoneNumber,
-      primaryPhone: phone.primaryPhone,
-      verified: phone.verified,
-      verificationCode: phone.verificationCode,
-      time: phone.time
+      phoneId: phone ? phone.phoneId : null,
+      userId: this.formGroup.get("userId").value ? this.formGroup.get("userId").value : null,
+      phoneNumber: phone ? phone.phoneNumber : null,
+      primaryPhone: phone ? phone.primaryPhone : false, //(this.formGroup.get("phones").value.length > 0 ? false : true),
+      verified: phone ? phone.verified : false,
+      verificationCode: phone ? phone.verificationCode : null,
+      time: phone ? phone.time : null
     });
   }
 
@@ -94,127 +82,67 @@ export class UserDetailComponent implements OnInit {
     return (<FormGroup>this.formGroup.get("newPhone") as FormGroup);
   }
 
-  get newPhoneNumberControl(): FormControl {
-    return (this.formGroup.get("newPhone").get("phoneNumber") as FormControl);
-  }
-
-  get newPhonePrimaryControl(): FormControl {
-      return (this.formGroup.get("newPhone").get("primaryPhone") as FormControl);
-    }
-
-  get newPhoneNumberErrors(): any {
-    return this.newPhoneNumberControl.errors
-  }
-
-  get newPhoneErrors(): any {
-    return this.phoneErrorMessage(this.newPhoneNumberControl);
-  }
-
-  phoneErrors(control: FormControl): any {
-    this.phoneErrorMessage(control);
-  }
-
-  phoneErrorMessage(control: FormControl) : any {
-    if(control && control.errors) {
-      if(control.errors.pattern) {
-        this.changeFormatError(control);
-        return control.errors.pattern.requiredPattern;
-      }
-      return control.errors;
-    }
-    return null;
-  }
-
-
   private get phonesFormArray(): FormArray {
     return this.formGroup.get("phones") as FormArray;
   }
+
+  get phonesFormArrayControls(): FormControl[] {
+    //console.log(this.phonesFormArray.controls);
+    return (this.phonesFormArray.controls) as FormControl[];
+  }
+
+//   phoneErrors(control: FormControl): any {
+//     this.phoneErrorMessage(control);
+//   }
+
+//   phoneErrorMessage(control: FormControl) : any {
+//     if(control && control.errors) {
+//       if(control.errors.pattern) {
+//         this.changeFormatError(control);
+//         return control.errors.pattern.requiredPattern;
+//       }
+//       return control.errors;
+//     }
+//     return null;
+//   }
+
+
 // CRUD and Use Case methods
 //---------------------------
 
   private loadUser(userId: string) {
     this.userService.get(userId).subscribe(user => {
       this.formGroup.patchValue(user);
-      this.loadPhones(user.userId);
-      this.initialPhonesLength = user.phones ? user.phones.length : 0;
+      if(user){
+        this.loadPhones(user.userId);
+      }
     });
   }
 
   private loadPhones(userId: string) {
+    while(this.phonesFormArray.length > 0){
+      this.phonesFormArray.removeAt(0)
+    }
+    if(userId) {
+      this.phonesFormArray.reset();
       this.phoneService.findUserPhones(userId).subscribe(phones => {
         phones.forEach(phone => {
+          //console.log(phones);
           const phoneFormGroup = this.createPhoneFormGroup(phone);
           this.phonesFormArray.controls.push(phoneFormGroup);
         });
       });
+    }
   }
 
-
-  // private loadPhones(userId: string) {
-  //   if(userId) {
-  //     while(this.phonesControl.length > 0) {
-  //       this.phonesControl.removeAt(0);
-  //     }
-  //     this.phoneService.findUserPhones(userId).subscribe(phones => {
-  //       if(phones.length > 0){
-  //         if((<FormArray>this.formGroup.get("phones")).at(0) == null) {
-  //           (<FormArray>this.formGroup.get("phones")).push(this.addPhone(phones.find(x => x.primaryPhone === true)));
-  //         }
-  //         var i = (<FormArray>this.formGroup.get("phones")).value.length;
-  //         phones.filter(x => x.primaryPhone !== true).forEach(phone => {
-  //           if((<FormArray>this.formGroup.get("phones")).at(i) == null) {
-  //             (<FormArray>this.formGroup.get("phones")).push(this.addPhone(phone));
-  //             i++;
-  //           }
-  //         });
-  //       }
-  //     }, httpError => {
-  //
-  //     });
-  //   }
-  // }
-
   save() {
-    //check for errors
-    for(let i = 0; i < this.phonesControl.value.length; i++) {
-      var groupToCheck = this.phonesControl.at(i) as FormGroup;
-      if(groupToCheck.controls.phoneNumber.errors) {
-        if(groupToCheck.controls.phoneNumber.errors.pattern) {
-          return;
-        }
-        return;
-      }
-    }
-    if(this.newPhoneNumberControl && this.newPhoneNumberControl.errors) {
-      return;
-    }
-    //get which phone to make primary
-    var toMakePrimary: string;
-    if(this.newPhoneNumberControl && this.newPhoneNumberControl.value != null) {
-      if(this.newPhonePrimaryControl && this.formGroup.get("newPhone").value.primaryPhone === true) {
-        toMakePrimary = this.newPhoneNumberControl.value;
-      }
-      this.addNewPhone();
-    } else {
-      var newPrimaryPhonesLength = this.phonesControl.value
-            .filter(x => x.phoneId === null && x.primaryPhone === true)
-            .length;
-      if(newPrimaryPhonesLength > 0) {
-        toMakePrimary = this.phonesControl.value
-            .filter(x => x.phoneId === null && x.primaryPhone === true)[newPrimaryPhonesLength - 1]
-            .phoneNumber;
-      }
-    }
-    if(toMakePrimary) {
-      var index = this.phonesControl.value.findIndex(x => x.phoneNumber === toMakePrimary);
-      this.changePrimary(index);
-    }
     //save the user
-    const valueToSave = this.formGroup.value as UserModel;
-    this.userService.save(valueToSave).subscribe((savedValue) => {
-      if(toMakePrimary) {
-        this.makePrimary(savedValue.phones.find(x => x.phoneNumber === toMakePrimary));
-      }
+    //console.log(this.phonesFormArray.at(index).value.primaryPhone)
+    console.log("controls in save:",this.phonesFormArrayControls)
+    this.formGroup.get("phones").patchValue(this.phonesFormArrayControls);
+    console.log("form group in save",this.formGroup.value);
+    this.userService.save((this.formGroup.value as UserModel)).subscribe((savedValue) => {
+      console.log("saved value",savedValue);
       this.router.navigateByUrl("users");
     }, httpError => {
       if (httpError.status === 400) {
@@ -224,11 +152,11 @@ export class UserDetailComponent implements OnInit {
             this.formGroup.get(key).setErrors(httpError.error[key]);
           } else {
             //for user.phones[] errors
-           for(var i = 0; i < this.formGroup.get("phones").value.length; i++) {
-              if(key.includes(i+"") && key.includes("phoneNumber")) {
-                this.phonesControl.controls[i].setErrors(httpError.error[key]);
-              }
-            }
+//            for(var i = 0; i < this.formGroup.get("phones").value.length; i++) {
+//               if(key.includes(i+"") && key.includes("phoneNumber")) {
+//                 this.phonesControl.controls[i].setErrors(httpError.error[key]);
+//               }
+//             }
           }
         });
       } else {
@@ -238,71 +166,36 @@ export class UserDetailComponent implements OnInit {
   }
 
   cancel() {
-    if(this.formGroup.dirty || this.newPhoneNumberControl.value != null
-        || this.phonesControl.value.length != this.initialPhonesLength){
+    if(this.formGroup.dirty){
       this.openConfirmCancelChangesModal("Changes have been made to the form. Continue?", "Confirm cancel");
     } else {
       this.router.navigateByUrl("users");
     }
   }
 
-  verifyPhone(index: number) {
-    var phone = this.formGroup.get("phones").value[index] as PhoneModel;
-    if(phone && phone.phoneId) {
-      this.openPhoneVerificationModal(phone);
-    }
-  }
-
-  deletePhone(phone: FormGroup) {
-    if(phone && phone.get("phoneId").value) {
-      var valueToDelete = phone.value as PhoneModel;
-      this.phoneService.delete(valueToDelete).subscribe((deleted) => {
-        this.loadUser(valueToDelete.userId);
-        }, httpError => {
-          if(httpError.status === 400) {
-
-          } else {
-            console.log("oh no something horrible went awry deleting phone");
-          }
-
-      });
-    } else {
-      this.phonesControl.removeAt(this.phonesControl.value.findIndex(x => x.phoneNumber === phone.get("phoneNumber").value));
-      this.loadUser(this.formGroup.get("userId").value);
-    }
-  }
-
-addNewPhone() {
- if(this.newPhoneNumberControl.errors) {
-      return;
- }
-  var valueToAdd = this.formGroup.get("newPhone").value as PhoneModel;
-  valueToAdd.userId = this.formGroup.get("userId").value as string;
-  valueToAdd.primaryPhone = this.formGroup.get("newPhone").value.primaryPhone === true ? true : false;
-  if(!this.newPhoneNumberErrors) {
-    this.phonesControl.push(this.createPhoneFormGroup(valueToAdd));
-    this.newPhoneRowVisible = false;
-    this.formGroup.get("newPhone").reset();
-  }
-}
-
-
-  containsDuplicates(phoneNumber: string): boolean{
-    for(var i = 0; i < this.phonesControl.value.length; i++){
-      if(this.phonesControl.value[i].phoneNumber === phoneNumber) {
-        return true;
+  verifyPhone(phone: FormGroup) {
+      //console.log(phone.value as PhoneModel);
+      if(phone && phone.value.phoneId){
+        this.openPhoneVerificationModal((phone.value as PhoneModel));
       }
-    }
-    return false;
+      console.log(phone);
   }
 
-  cancelPhone() {
-    this.newPhoneRowVisible = false;
-    this.formGroup.get("newPhone").reset();
+  //deletePhone(phone: FormGroup) {
+  deletePhone(index: number) {
+    //console.log(phone);
+    this.phonesFormArray.removeAt(index);
+
+  }
+
+  addNewPhone() {
+    this.phonesFormArray.controls.push(this.createPhoneFormGroup(null));
+    //console.log(this.phonesFormArrayControls);
   }
 
   makePrimary(phone: PhoneModel) {
     this.phoneService.makePrimary(phone).subscribe((newPrimaryPhone) => {
+      console.log("newPrimaryPhone: ",newPrimaryPhone);
     }, httpError => {
       if(httpError.status === 400) {
       } else {
@@ -354,68 +247,39 @@ addNewPhone() {
 // Visibility and UI utility methods
 //----------------------------------
 
-   userExists() {
-     if(this.formGroup.get("userId").value){
-       return true;
-     }
-     return false;
-   }
+//   isPrimaryPhone(index: number) {
+//   const phoneToCheck = this.phonesFormArrayControls[index].value.primaryPhone;
+//   //console.log("isPrimary",phoneToCheck)
+//     if(phoneToCheck) {
+//       return phoneToCheck === true ? true : false;
+//     } else {
+//       return false;
+//     }
+//   }
 
-  phoneIdExists(index: number) {
-    var phone = this.formGroup.get("phones").value[index] as PhoneModel;
-    if(phone.phoneId) {
-      return true;
+  changePrimary(phone: FormGroup) {
+    if(phone.value.phoneId) {
+      this.formGroup.get("phones").value.forEach(x => {
+        if(x.phoneId !== phone.value.phoneId) {
+          x.patchValue(false);
+        }
+      });
+    }
+//     this.phonesFormArrayControls.forEach(phone => {
+//       phone.value.primaryPhone = false;
+//     });
+//     if(index >= 0) {
+//       this.phonesFormArrayControls[index].value.primaryPhone = true;
+//     }
+//     //console.log("changePrimary:",this.phonesFormArrayControls);
+  }
+
+  isVerified(index: number) {
+    if(index >= 0 && this.phonesFormArrayControls[index].value) {
+      console.log("isVerified result", this.phonesFormArrayControls[index].value.verified === true);
+      return this.phonesFormArrayControls[index].value.verified === true;
     }
     return false;
-  }
-
-  checkVerified(index: number) {
-    var phone = this.formGroup.get("phones").value[index] as PhoneModel;
-    if(phone){
-      if(phone.verified === true){
-        return true;
-      } else {
-        return false;
-      }
-    }
-  }
-
-  isPrimaryPhone(index: number) {
-  const phoneToCheck = this.phonesControl.at(index).value.primaryPhone;
-    if(phoneToCheck) {
-      return phoneToCheck === true ? true : false;
-    } else {
-      return false;
-    }
-  }
-
-  isFirstPhone() {
-    if(this.formGroup.get("phones").value.length == 0) {
-      this.formGroup.get("newPhone").value.primaryPhone = true
-      return true;
-    } else {
-      return false;
-    }
-  }
-
-  phoneHeadersVisible() {
-    if(this.formGroup.get("phones").value && this.formGroup.get("phones").value.length > 0) {
-      return true;
-    } else {
-      return false;
-    }
-  }
-
-  showPhoneForm() {
-    this.newPhoneRowVisible = true;
-    this.isFirstPhone();
-  }
-
-  primaryCheckboxChange() {
-    this.formGroup.get("newPhone").value.primaryPhone = !this.formGroup.get("newPhone").value.primaryPhone;
-    if(!this.formGroup.get("newPhone").value.primaryPhone) {
-      this.formGroup.get("newPhone").value.primaryPhone = false;
-    }
   }
 
   changeFormatError(control: FormControl) {
@@ -424,52 +288,4 @@ addNewPhone() {
     }
   }
 
-  onKeyUp($event, control: FormControl){
-    if($event.code !== "Backspace") {
-      this.formatPhoneNumber(control);
-    }
-  }
-
-    //TO REMOVE
-    formatPhoneNumber(control: FormControl) {
-      //for copy-pasting a number
-      if(control.value) {
-        var checkNumber = control.value;
-        if(checkNumber.length == 10 && !checkNumber.includes("(")
-              && !checkNumber.includes(")") && !checkNumber.includes("-")) {
-           var areaCode = <string>"(" + control.value.substring(0,3) + ")";
-           var officeCode = <string>control.value.substring(3, 6) + "-";
-           var digitStationCode = <string>control.value.substring(6, 10);
-           control.patchValue(areaCode + officeCode + digitStationCode)
-           this.changeFormatError(control);
-           return;
-        }
-        if(control.value.length == 3) {
-          var areaCode = <string>"(" + control.value.replace(/\D/g, '') + ")";
-          control.patchValue(areaCode);
-        }
-        if(control.value.length == 8 && control.value.includes("(")
-             && control.value.includes(")")) {
-          var areaCode = <string>control.value.substring(0, 5);
-          var officeCode = <string>control.value.substring(5, 9) + "-";
-          control.patchValue(areaCode + officeCode);
-        }
-        if(control.value.length == 13) {
-          var areaCode = <string>control.value.substring(0, 5);
-          var officeCode = <string>control.value.substring(5, 10);
-          var digitStationCode = <string>control.value.substring(10, 13);
-          control.patchValue(areaCode + officeCode + digitStationCode);
-        }
-        this.changeFormatError(control);
-      }
-    }
-
-  changePrimary(index: number) {
-    this.phonesControl.value.forEach(phone => {
-      phone.primaryPhone = false;
-    })
-    if(index >= 0) {
-      this.phonesControl.at(index).value.primaryPhone = true;
-    }
-  }
 }
