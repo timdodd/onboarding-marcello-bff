@@ -51,7 +51,7 @@ export class UserDetailComponent implements OnInit {
       phoneId: phone ? phone.phoneId : null,
       userId: this.formGroup.get("userId").value ? this.formGroup.get("userId").value : null,
       phoneNumber: phone ? phone.phoneNumber : null,
-      primaryPhone: phone ? phone.primaryPhone : false, //(this.formGroup.get("phones").value.length > 0 ? false : true),
+      primaryPhone: phone ? phone.primaryPhone : false,
       verified: phone ? phone.verified : false,
       verificationCode: phone ? phone.verificationCode : null,
       time: phone ? phone.time : null
@@ -122,7 +122,7 @@ export class UserDetailComponent implements OnInit {
 
   save() {
     //save the user
-    //console.log("controls in save:",this.phonesFormArrayControls)
+    console.log("controls in save:",this.phonesFormArrayControls)
     this.formGroup.get("phones").patchValue(this.phonesFormArrayControls);
     this.userService.save((this.formGroup.value as UserModel)).subscribe((savedValue) => {
       //console.log("saved value",savedValue);
@@ -225,22 +225,20 @@ export class UserDetailComponent implements OnInit {
     });
   }
 
-  //trying to figure out binding for the radio box
-  changePrimary(phone: FormGroup) {
-    if(phone.value.phoneId) {
-      this.formGroup.get("phones").value.forEach(x => {
-        if(x.phoneId !== phone.value.phoneId) {
-          x.patchValue(false);
-        }
-      });
-    }
-//     this.phonesFormArrayControls.forEach(phone => {
-//       phone.value.primaryPhone = false;
-//     });
-//     if(index >= 0) {
-//       this.phonesFormArrayControls[index].value.primaryPhone = true;
-//     }
-//     //console.log("changePrimary:",this.phonesFormArrayControls);
+  primaryRadioButton(phone: FormGroup) {
+    this.phonesFormArrayControls.forEach(group => {
+      if(phone.value.phoneNumber !== group.value.phoneNumber) {
+        group.value.primaryPhone = false;
+      } else {
+        group.value.primaryPhone = true;
+      }
+    });
+    this.checkValue(phone.value);
+    console.log(this.phonesFormArrayControls);
+  }
+
+  checkValue(value: any){
+    console.log("check value:",value);
   }
 
 }
