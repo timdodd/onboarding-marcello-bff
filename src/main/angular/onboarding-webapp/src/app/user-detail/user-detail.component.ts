@@ -91,21 +91,6 @@ export class UserDetailComponent implements OnInit {
     return (this.phonesFormArray.controls) as FormControl[];
   }
 
-//   phoneErrors(control: FormControl): any {
-//     this.phoneErrorMessage(control);
-//   }
-
-//   phoneErrorMessage(control: FormControl) : any {
-//     if(control && control.errors) {
-//       if(control.errors.pattern) {
-//         this.changeFormatError(control);
-//         return control.errors.pattern.requiredPattern;
-//       }
-//       return control.errors;
-//     }
-//     return null;
-//   }
-
 
 // CRUD and Use Case methods
 //---------------------------
@@ -137,12 +122,10 @@ export class UserDetailComponent implements OnInit {
 
   save() {
     //save the user
-    //console.log(this.phonesFormArray.at(index).value.primaryPhone)
-    console.log("controls in save:",this.phonesFormArrayControls)
+    //console.log("controls in save:",this.phonesFormArrayControls)
     this.formGroup.get("phones").patchValue(this.phonesFormArrayControls);
-    console.log("form group in save",this.formGroup.value);
     this.userService.save((this.formGroup.value as UserModel)).subscribe((savedValue) => {
-      console.log("saved value",savedValue);
+      //console.log("saved value",savedValue);
       this.router.navigateByUrl("users");
     }, httpError => {
       if (httpError.status === 400) {
@@ -151,12 +134,12 @@ export class UserDetailComponent implements OnInit {
             //for user errors
             this.formGroup.get(key).setErrors(httpError.error[key]);
           } else {
-            //for user.phones[] errors
-//            for(var i = 0; i < this.formGroup.get("phones").value.length; i++) {
-//               if(key.includes(i+"") && key.includes("phoneNumber")) {
-//                 this.phonesControl.controls[i].setErrors(httpError.error[key]);
-//               }
-//             }
+            //setting user.phones[] errors
+           for(var i = 0; i < this.formGroup.get("phones").value.length; i++) {
+              if(key.includes(i+"") && key.includes("phoneNumber")) {
+                this.phonesControl.controls[i].setErrors(httpError.error[key]);
+              }
+            }
           }
         });
       } else {
@@ -195,7 +178,7 @@ export class UserDetailComponent implements OnInit {
 
   makePrimary(phone: PhoneModel) {
     this.phoneService.makePrimary(phone).subscribe((newPrimaryPhone) => {
-      console.log("newPrimaryPhone: ",newPrimaryPhone);
+      //console.log("newPrimaryPhone: ",newPrimaryPhone);
     }, httpError => {
       if(httpError.status === 400) {
       } else {
@@ -242,21 +225,7 @@ export class UserDetailComponent implements OnInit {
     });
   }
 
-
-
-// Visibility and UI utility methods
-//----------------------------------
-
-//   isPrimaryPhone(index: number) {
-//   const phoneToCheck = this.phonesFormArrayControls[index].value.primaryPhone;
-//   //console.log("isPrimary",phoneToCheck)
-//     if(phoneToCheck) {
-//       return phoneToCheck === true ? true : false;
-//     } else {
-//       return false;
-//     }
-//   }
-
+  //trying to figure out binding for the radio box
   changePrimary(phone: FormGroup) {
     if(phone.value.phoneId) {
       this.formGroup.get("phones").value.forEach(x => {
@@ -272,20 +241,6 @@ export class UserDetailComponent implements OnInit {
 //       this.phonesFormArrayControls[index].value.primaryPhone = true;
 //     }
 //     //console.log("changePrimary:",this.phonesFormArrayControls);
-  }
-
-  isVerified(index: number) {
-    if(index >= 0 && this.phonesFormArrayControls[index].value) {
-      console.log("isVerified result", this.phonesFormArrayControls[index].value.verified === true);
-      return this.phonesFormArrayControls[index].value.verified === true;
-    }
-    return false;
-  }
-
-  changeFormatError(control: FormControl) {
-    if(control && control.errors && control.errors.pattern) {
-      control.errors.pattern.requiredPattern = "Incorrect format. Enter 10 digits.\n Auto formats to: (XXX)123-4567";
-    }
   }
 
 }
