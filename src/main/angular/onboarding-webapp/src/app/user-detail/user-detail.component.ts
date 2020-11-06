@@ -105,6 +105,7 @@ export class UserDetailComponent implements OnInit {
   }
 
   private loadPhones(userId: string) {
+    //keep getting empty field duplicates of this in the controls without this
     while(this.phonesFormArray.length > 0){
       this.phonesFormArray.removeAt(0)
     }
@@ -122,10 +123,16 @@ export class UserDetailComponent implements OnInit {
 
   save() {
     //save the user
-    console.log("controls in save:",this.phonesFormArrayControls)
+    //console.log("controls in save:",this.phonesFormArrayControls)
     this.formGroup.get("phones").patchValue(this.phonesFormArrayControls);
     this.userService.save((this.formGroup.value as UserModel)).subscribe((savedValue) => {
-      //console.log("saved value",savedValue);
+      //console.log("saved value",savedValue.phones);
+      savedValue.phones.forEach(phone => {
+        if(phone.primaryPhone === true){
+          console.log("to make primary", phone);
+          this.makePrimary(phone);
+        }
+      })
       this.router.navigateByUrl("users");
     }, httpError => {
       if (httpError.status === 400) {
@@ -161,7 +168,7 @@ export class UserDetailComponent implements OnInit {
       if(phone && phone.value.phoneId){
         this.openPhoneVerificationModal((phone.value as PhoneModel));
       }
-      console.log(phone);
+      //console.log(phone);
   }
 
   //deletePhone(phone: FormGroup) {
@@ -173,12 +180,13 @@ export class UserDetailComponent implements OnInit {
 
   addNewPhone() {
     this.phonesFormArray.controls.push(this.createPhoneFormGroup(null));
-    //console.log(this.phonesFormArrayControls);
+    //(<FormArray>this.formGroup.get("phones")).push(this.createPhoneFormGroup(null));
   }
 
   makePrimary(phone: PhoneModel) {
     this.phoneService.makePrimary(phone).subscribe((newPrimaryPhone) => {
       //console.log("newPrimaryPhone: ",newPrimaryPhone);
+      this.loadPhones(phone.userId);
     }, httpError => {
       if(httpError.status === 400) {
       } else {
@@ -226,19 +234,9 @@ export class UserDetailComponent implements OnInit {
   }
 
   primaryRadioButton(phone: FormGroup) {
-    this.phonesFormArrayControls.forEach(group => {
-      if(phone.value.phoneNumber !== group.value.phoneNumber) {
-        group.value.primaryPhone = false;
-      } else {
-        group.value.primaryPhone = true;
-      }
-    });
-    this.checkValue(phone.value);
-    console.log(this.phonesFormArrayControls);
-  }
-
-  checkValue(value: any){
-    console.log("check value:",value);
+    if(phone.value.phoneId) {
+      this.makePrimary(phone.value);
+    }
   }
 
 }

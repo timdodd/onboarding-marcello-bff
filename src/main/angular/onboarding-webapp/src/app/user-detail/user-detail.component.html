@@ -39,8 +39,8 @@
             </td>
             <td>
               <div class="form-check mt-1">
-                <input type="radio" [value]="phone.value.primaryPhone" (checked)="phone.value.primaryPhone === true" name="primaryPhone"
-                       (click)="primaryRadioButton(phone)">
+                <input type="radio" [value]="checked" name="primaryPhone"
+                       checked="phone.value.primaryPhone === true" (click)="primaryRadioButton(phone)">
               </div>
             </td>
             <td >
