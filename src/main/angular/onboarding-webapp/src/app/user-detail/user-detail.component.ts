@@ -87,7 +87,6 @@ export class UserDetailComponent implements OnInit {
   }
 
   get phonesFormArrayControls(): FormControl[] {
-    //console.log(this.phonesFormArray.controls);
     return (this.phonesFormArray.controls) as FormControl[];
   }
 
@@ -113,7 +112,6 @@ export class UserDetailComponent implements OnInit {
       this.phonesFormArray.reset();
       this.phoneService.findUserPhones(userId).subscribe(phones => {
         phones.forEach(phone => {
-          //console.log(phones);
           const phoneFormGroup = this.createPhoneFormGroup(phone);
           this.phonesFormArray.controls.push(phoneFormGroup);
         });
@@ -123,10 +121,8 @@ export class UserDetailComponent implements OnInit {
 
   save() {
     //save the user
-    //console.log("controls in save:",this.phonesFormArrayControls)
     this.formGroup.get("phones").patchValue(this.phonesFormArrayControls);
     this.userService.save((this.formGroup.value as UserModel)).subscribe((savedValue) => {
-      //console.log("saved value",savedValue.phones);
       savedValue.phones.forEach(phone => {
         if(phone.primaryPhone === true){
           console.log("to make primary", phone);
@@ -164,16 +160,13 @@ export class UserDetailComponent implements OnInit {
   }
 
   verifyPhone(phone: FormGroup) {
-      //console.log(phone.value as PhoneModel);
       if(phone && phone.value.phoneId){
         this.openPhoneVerificationModal((phone.value as PhoneModel));
       }
-      //console.log(phone);
   }
 
   //deletePhone(phone: FormGroup) {
   deletePhone(index: number) {
-    //console.log(phone);
     this.phonesFormArray.removeAt(index);
 
   }
@@ -185,8 +178,7 @@ export class UserDetailComponent implements OnInit {
 
   makePrimary(phone: PhoneModel) {
     this.phoneService.makePrimary(phone).subscribe((newPrimaryPhone) => {
-      //console.log("newPrimaryPhone: ",newPrimaryPhone);
-      this.loadPhones(phone.userId);
+      //this.loadPhones(phone.userId);
     }, httpError => {
       if(httpError.status === 400) {
       } else {
@@ -234,6 +226,12 @@ export class UserDetailComponent implements OnInit {
   }
 
   primaryRadioButton(phone: FormGroup) {
+    for(var i = 0; i < this.phonesFormArrayControls.length; i++) {
+      if(this.phonesFormArrayControls[i].value.phoneNumber !== phone.value.phoneNumber) {
+        this.phonesFormArrayControls[i].value.primaryPhone = false;
+      }
+      else {this.phonesFormArrayControls[i].value.primaryPhone = true;}
+    }
     if(phone.value.phoneId) {
       this.makePrimary(phone.value);
     }
