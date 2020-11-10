@@ -215,12 +215,20 @@ export class UserDetailComponent implements OnInit {
     });
   }
 
-  primaryRadioButton(phone: FormGroup) {
+  primaryRadioButtonClick(phone: FormGroup) {
     for(var i = 0; i < this.phonesFormArrayControls.length; i++) {
       if(this.phonesFormArrayControls[i].value.phoneNumber !== phone.value.phoneNumber) {
         this.phonesFormArrayControls[i].get("primaryPhone").patchValue(false);
       }
       else {this.phonesFormArrayControls[i].get("primaryPhone").patchValue(true);}
+    }
+  }
+
+  resetVerifiedOnChange(phone: FormGroup, index: number) {
+    if(!phone.errors) {
+      if(phone.value.verified === true) {
+        this.phonesFormArrayControls[index].get("verified").patchValue(false);
+      }
     }
   }
 

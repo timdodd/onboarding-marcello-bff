@@ -6,19 +6,19 @@
     <form [formGroup]="formGroup">
       <div class="form-group">
         <label for="firstName">First name</label>
-        <input type="text" class="form-control" id="firstName" formControlName="firstName">
+        <input type="text" class="form-control col-5" id="firstName" formControlName="firstName">
         <small *ngIf="firstNameControl.errors" class="text-danger">{{firstNameControl.errors}}</small>
       </div>
       <div class="form-group">
         <label for="lastName">Last Name</label>
-        <input type="text" class="form-control" id="lastName" formControlName="lastName">
+        <input type="text" class="form-control col-5" id="lastName" formControlName="lastName">
         <small *ngIf="lastNameControl.errors" class="text-danger">{{lastNameControl.errors}}</small>
       </div>
       <div class="form-group">
         <label for="username">Username</label>
         <input type="text"
                [class.is-invalid]="usernameControl.errors"
-               class="form-control" id="username" formControlName="username">
+               class="form-control col-5" id="username" formControlName="username">
         <small *ngIf="usernameControl.errors" class="text-danger">{{usernameControl.errors}}</small>
       </div>
         <table class="table form-group">
@@ -34,13 +34,14 @@
           <tr *ngFor="let phone of phonesFormArrayControls; let i = index"
               formGroupName="{{i}}">
             <td>
-              <app-phone-number formControlName="phoneNumber" [class.is-invalid]="phone.errors"></app-phone-number>
+              <app-phone-number formControlName="phoneNumber" [class.is-invalid]="phone.errors"
+                                (change)="resetVerifiedOnChange(phone, i)"></app-phone-number>
               <small *ngIf="phone.errors" class="text-danger">{{phone.errors}}</small>
             </td>
             <td>
               <div class="form-check mt-1">
                 <input type="radio" [value]="phone.value.primaryPhone" name="primaryPhone"
-                       [checked]="phone.value.primaryPhone" (click)="primaryRadioButton(phone)">
+                       [checked]="phone.value.primaryPhone" (click)="primaryRadioButtonClick(phone)">
               </div>
             </td>
             <td >
