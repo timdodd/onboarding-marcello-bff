@@ -10,33 +10,20 @@ import {ControlValueAccessor, NG_VALUE_ACCESSOR, NG_VALIDATORS, AbstractControl,
       useExisting: forwardRef(() => PhoneNumberComponent),
       multi: true
     }]
-
-//     {
-//       provide: NG_VALIDATORS,
-//       useExisting: forwardRef(() => RequiredFormat),
-//       multi: true,
-//     }]
 })
 
 export class PhoneNumberComponent implements ControlValueAccessor, AfterViewInit {
 
-//     constructor(@Self() public controlDir: NgControl) {
-//       controlDir.valueAccessor = this;
-//     }
-
     @ViewChild('ref') inputElement: ElementRef;
 
-    onChange: (value: string) => void = () => {
-    };
-    onTouch: () => void = () => {
-    };
-
+    onChange: (value: string) => void = () => {};
+    onTouch: () => void = () => {};
     value = '';
 
     handleInput($event) {
       if(this.inputElement){
         if(this.inputElement.nativeElement.validity && !this.inputElement.nativeElement.validity.valid
-             && $event.target.value.length > 13){
+           && $event.target.value.length > 13){
              $event.target.value = this.value;
              //$event.preventDefault();
         } else {
@@ -83,10 +70,3 @@ export class PhoneNumberComponent implements ControlValueAccessor, AfterViewInit
     }
 
 }
-
-
-// export class RequiredFormat {
-//   validate(ctrl: AbstractControl) {
-//     return Validators.required(ctrl);
-//   }
-// }

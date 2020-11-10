@@ -39,17 +39,16 @@
             </td>
             <td>
               <div class="form-check mt-1">
-                <input type="radio" [value]="checked === true" name="primaryPhone"
-                       checked="phone.value.primaryPhone === true" (click)="primaryRadioButton(phone)">
+                <input type="radio" [value]="phone.value.primaryPhone" name="primaryPhone"
+                       [checked]="phone.value.primaryPhone" (click)="primaryRadioButton(phone)">
               </div>
             </td>
             <td >
-              <div class="form-check" *ngIf="phone.value.verified && phone.value.verified === true">
-                <input type="checkbox" class="form-check-input" id="verified${i}"
-                       formControlName="verified" disabled="primaryPhoneCheckboxDisabled">
+              <div class="form-check mt-1 ml-3" *ngIf="phone.value.verified && phone.value.verified === true">
+                <input type="radio" class="form-check-input " [checked]="true" >
               </div>
               <button *ngIf="phone.value.verified !== true" type="button" class="btn btn-sm btn-link pt-0 mt-0 border-0"
-                       (click)="verifyPhone(phone)" >Verify</button>
+                       (click)="verifyPhone(phone)">Verify</button>
             </td>
             <td>
               <button type="button" class="btn btn-link btn-sm pt-0 mt-0 border-0" (click)='deletePhone(i)'>

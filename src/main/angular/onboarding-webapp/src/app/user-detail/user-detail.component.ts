@@ -90,10 +90,6 @@ export class UserDetailComponent implements OnInit {
     return (this.phonesFormArray.controls) as FormControl[];
   }
 
-
-// CRUD and Use Case methods
-//---------------------------
-
   private loadUser(userId: string) {
     this.userService.get(userId).subscribe(user => {
       this.formGroup.patchValue(user);
@@ -120,12 +116,10 @@ export class UserDetailComponent implements OnInit {
   }
 
   save() {
-    //save the user
     this.formGroup.get("phones").patchValue(this.phonesFormArrayControls);
     this.userService.save((this.formGroup.value as UserModel)).subscribe((savedValue) => {
       savedValue.phones.forEach(phone => {
         if(phone.primaryPhone === true){
-          console.log("to make primary", phone);
           this.makePrimary(phone);
         }
       })
@@ -165,20 +159,16 @@ export class UserDetailComponent implements OnInit {
       }
   }
 
-  //deletePhone(phone: FormGroup) {
   deletePhone(index: number) {
     this.phonesFormArray.removeAt(index);
-
   }
 
   addNewPhone() {
     this.phonesFormArray.controls.push(this.createPhoneFormGroup(null));
-    //(<FormArray>this.formGroup.get("phones")).push(this.createPhoneFormGroup(null));
   }
 
   makePrimary(phone: PhoneModel) {
     this.phoneService.makePrimary(phone).subscribe((newPrimaryPhone) => {
-      //this.loadPhones(phone.userId);
     }, httpError => {
       if(httpError.status === 400) {
       } else {
@@ -228,12 +218,9 @@ export class UserDetailComponent implements OnInit {
   primaryRadioButton(phone: FormGroup) {
     for(var i = 0; i < this.phonesFormArrayControls.length; i++) {
       if(this.phonesFormArrayControls[i].value.phoneNumber !== phone.value.phoneNumber) {
-        this.phonesFormArrayControls[i].value.primaryPhone = false;
+        this.phonesFormArrayControls[i].get("primaryPhone").patchValue(false);
       }
-      else {this.phonesFormArrayControls[i].value.primaryPhone = true;}
-    }
-    if(phone.value.phoneId) {
-      this.makePrimary(phone.value);
+      else {this.phonesFormArrayControls[i].get("primaryPhone").patchValue(true);}
     }
   }
 
