@@ -25,7 +25,7 @@ export class PhoneNumberComponent implements ControlValueAccessor, AfterViewInit
         if(this.inputElement.nativeElement.validity && !this.inputElement.nativeElement.validity.valid
            && $event.target.value.length > 13){
              $event.target.value = this.value;
-             //$event.preventDefault();
+             $event.preventDefault();
         } else {
            this.setValue(this.format($event.target.value));
            this.onChange(this.value);
