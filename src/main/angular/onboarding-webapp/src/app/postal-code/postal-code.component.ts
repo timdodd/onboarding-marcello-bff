@@ -23,14 +23,11 @@ export class PostalCodeComponent implements ControlValueAccessor, AfterViewInit 
   value = '';
 
   handleInput($event) {
-
     //doesn't match the pattern
     // if(true) {
     //   this.setValue(this.value);
     //   return false;
     // }
-
-
     this.setValue(this.format($event.target.value));
 
     this.onChange(this.value);
@@ -38,7 +35,19 @@ export class PostalCodeComponent implements ControlValueAccessor, AfterViewInit 
   }
 
   format(value: string) {
-    return value.toUpperCase();
+    if(value) {
+      value = value.replace(/\W/g, "");
+      var letters = value.replace(/\d/g, "").toUpperCase();
+      var numbers = value.replace(/\D/g, "");
+
+      return (letters.length >= 1 ? letters.substring(0,1) : "") +
+              (numbers.length >= 1 ? numbers.substring(0,1) : "") +
+              (letters.length >= 2 && numbers.length >= 1 ? letters.substring(1,2) : "") +
+              (numbers.length >= 2 && letters.length >= 2 ? " " + numbers.substring(1,2) : "") +
+              (letters.length >= 3 && numbers.length >= 2 ? letters.substring(2,3) : "") +
+              (numbers.length >= 3 && letters.length >= 3 ? numbers.substring(2,3) : "");
+    }
+    return "";
   }
 
   ngAfterViewInit(): void {
