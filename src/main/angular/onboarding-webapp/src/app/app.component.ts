@@ -12,7 +12,7 @@ export class AppComponent {
 
   testFormControl = new FormControl();
 
-  testFormControl() {
+  testControl() {
     //console.log(this.testFormControl);
   }
 }
