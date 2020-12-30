@@ -21,6 +21,19 @@
                class="form-control col-5" id="username" formControlName="username">
         <small *ngIf="usernameControl.errors" class="text-danger">{{usernameControl.errors}}</small>
       </div>
+      <div class="form-group">
+        <label for="email">Email</label>
+        <input type="text"
+               [class.is-invalid]="emailControl.errors"
+               class="form-control col-5" id="email" formControlName="email">
+        <small *ngIf="emailControl.errors" class="text-danger">{{emailControl.errors}}</small>
+      </div>
+<!--      <div class="form-group">-->
+<!--        <label>Email</label>-->
+<!--        <app-email-address class="form-control col-5" id="email" [formControl]="emailControl"-->
+<!--                           [class.is-invalid]="emailControl.errors"></app-email-address>-->
+<!--        <small *ngIf="emailControl.errors" class="text-danger">{{emailControl.errors}}</small>-->
+<!--      </div>-->
         <table class="table form-group">
           <thead>
             <tr>

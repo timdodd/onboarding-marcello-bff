@@ -14,6 +14,7 @@ import { UserConfirmDialogComponent } from './user-confirm-dialog/user-confirm-d
 import { VerifyPhoneDialogComponent } from './verify-phone-dialog/verify-phone-dialog.component';
 import { PostalCodeComponent } from './postal-code/postal-code.component';
 import { PhoneNumberComponent } from './phone-number/phone-number.component';
+import { EmailAddressComponent } from './email-address/email-address.component';
 
 @NgModule({
   declarations: [
@@ -23,7 +24,8 @@ import { PhoneNumberComponent } from './phone-number/phone-number.component';
     UserConfirmDialogComponent,
     VerifyPhoneDialogComponent,
     PostalCodeComponent,
-    PhoneNumberComponent
+    PhoneNumberComponent,
+    EmailAddressComponent
   ],
   imports: [
     BrowserModule,

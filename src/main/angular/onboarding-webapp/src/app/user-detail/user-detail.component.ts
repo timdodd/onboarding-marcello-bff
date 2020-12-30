@@ -41,6 +41,7 @@ export class UserDetailComponent implements OnInit {
       firstName: null,
       lastName: null,
       username: null,
+      email: null,
       phones: this.formBuilder.array([]),
     });
   }
@@ -68,6 +69,10 @@ export class UserDetailComponent implements OnInit {
 
   get usernameControl(): FormControl {
     return this.formGroup.get("username") as FormControl;
+  }
+
+  get emailControl(): FormControl {
+    return this.formGroup.get("email") as FormControl;
   }
 
   get userIdControl(): FormControl {
